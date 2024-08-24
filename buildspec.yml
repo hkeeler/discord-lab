@@ -4,7 +4,7 @@ phases:
     commands:
       - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
       - export REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-      - export REPO_NAME="${REGISTRY}.amazonaws.com/hkeeler/discord-lab"
+      - export REPO_NAME="${REGISTRY}/hkeeler/discord-lab"
       - export IMAGE_TAG=$CODEBUILD_BUILD_NUMBER
       - export IMAGE_NAME="${REPO_NAME}:${IMAGE_TAG}"
       - env | sort
