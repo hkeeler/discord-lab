@@ -3,7 +3,7 @@ import json
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
-DISCORD_PUBLIC_KEY='1276658810685100126'
+DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 
 def handler(event, context):
     print(event)
