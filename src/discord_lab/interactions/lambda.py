@@ -12,8 +12,8 @@ def handler(event, context):
 
     verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
 
-    signature = headers["X-Signature-Ed25519"]
-    timestamp = headers["X-Signature-Timestamp"]
+    signature = headers["x-signature-ed25519"]
+    timestamp = headers["x-signature-timestamp"]
 
     response_code = 200
     response_body = json.dumps( {'type': 1} )
