@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "discord-lab"
+version = "0.1.0"
+description = "Experiments with Discord bots, APIs, etc."
+authors = ["Hans Keeler <hkeeler@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "*", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+discord-interactions = "^0.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
