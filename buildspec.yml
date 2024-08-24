@@ -1,0 +1,13 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - export REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      - export REPO_NAME="${REGISTRY}.amazonaws.com/hkeeler/discord-lab"
+      - export IMAGE_NAME=${REPO_NAME}:main
+      - env | sort
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${REGISTRY}
+  build:
+    commands:
+      - docker build -t $IMAGE_NAME .
+      - docker push $IMAGE_NAME
