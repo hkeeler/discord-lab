@@ -13,3 +13,4 @@ phases:
     commands:
       - docker build -t $IMAGE_NAME .
       - docker push $IMAGE_NAME
+      - aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
