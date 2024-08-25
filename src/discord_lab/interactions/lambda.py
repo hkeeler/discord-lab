@@ -24,7 +24,9 @@ def handler(event, context):
     res_code = 200
     res_body = {
         'type': INTERACTION_REQ_RES[interaction_type],
-        'content': 'Like, I know, right!?'
+        'data': {
+            'content': 'Like, I know, right!?'
+        }
     }
 
     res_body_str = json.dumps(res_body)
