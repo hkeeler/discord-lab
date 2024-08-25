@@ -12,10 +12,12 @@ INTERACTION_REQ_RES={
 
 def handler(event, context):
     print(event)
-    body = event['body']
-    print(body)
+    body_str = event['body']
+    print(body_str)
 
-    interaction_type = body['type']
+    body_json = json.loads(body_str)
+
+    interaction_type = body_json['type']
 
     headers = event['headers']
 
