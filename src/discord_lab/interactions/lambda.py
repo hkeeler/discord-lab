@@ -7,7 +7,11 @@ DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0
 
 def handler(event, context):
     print(event)
-    body = event.get('body', None)
+    body = event['body']
+    print(body)
+
+    interaction_type = body['type']
+
     headers = event['headers']
 
     verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
@@ -16,7 +20,7 @@ def handler(event, context):
     timestamp = headers["x-signature-timestamp"]
 
     response_code = 200
-    response_body = json.dumps( {'type': 1} )
+    response_body = json.dumps( {'type': interaction_type} )
 
     try:
         verify_key.verify(f'{timestamp}{body}'.encode(), bytes.fromhex(signature))
