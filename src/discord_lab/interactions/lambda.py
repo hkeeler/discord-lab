@@ -35,8 +35,7 @@ def handler(event, context):
     req_body_str = event['body']
     print(f'{type(req_body_str)}: {req_body_str}')
 
-    #req_body = json.loads(req_body_str)
-    req_body = req_body_str
+    req_body = json.loads(req_body_str)
 
     if not DEV_MODE:
         try:
