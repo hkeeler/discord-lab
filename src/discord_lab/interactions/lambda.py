@@ -12,34 +12,34 @@ INTERACTION_REQ_RES={
 
 def handler(event, context):
     print(event)
-    body_str = event['body']
-    print(body_str)
+    req_body_str = event['body']
+    print(req_body_str)
 
-    body_json = json.loads(body_str)
+    req_body = json.loads(req_body_str)
 
-    interaction_type = body_json['type']
+    interaction_type = req_body['type']
 
     headers = event['headers']
 
-    verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
-
-    signature = headers["x-signature-ed25519"]
-    timestamp = headers["x-signature-timestamp"]
-
-    response_code = 200
-    response_message = {
+    res_code = 200
+    res_body = {
         'type': INTERACTION_REQ_RES[interaction_type],
         'content': 'Like, I know, right!?'
     }
-    response_body = json.dumps(response_message)
+
+    res_body_str = json.dumps(res_body)
 
     try:
-        verify_key.verify(f'{timestamp}{body}'.encode(), bytes.fromhex(signature))
+        signature = headers["x-signature-ed25519"]
+        timestamp = headers["x-signature-timestamp"]
+
+        verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
+        verify_key.verify(f'{timestamp}{req_body_str}'.encode(), bytes.fromhex(signature))
     except BadSignatureError:
-        response_code = 401
-        response_body = 'invalid request signature'
+        res_code = 401
+        res_body_str = 'invalid request signature'
 
     return {
-        'statusCode': response_code,
-        'body': response_body
+        'statusCode': res_code,
+        'body': res_body_str
     }
