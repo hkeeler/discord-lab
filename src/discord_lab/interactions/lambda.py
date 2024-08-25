@@ -3,45 +3,60 @@ import json
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
-DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
+from discord_lab.dice import roll_die_mult
 
-INTERACTION_REQ_RES={
-    1:1, # PING -> PONG
-    2:4  # APPLICATION_COMMAND -> CHANNEL_MESSAGE_WITH_SOURCE
+DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
+DEV_MODE = True
+
+def ping(req_body: dict) -> tuple[int,dict]:
+    return 200, {'type':1}
+
+# TODO: Improve exception handling
+def slash_command(req_body: dict) -> tuple[int,dict]:
+    dice_mult = req_body['data']['options'][0]['value']
+    rolls = roll_die_mult(dice_mult)
+    total = sum(rolls)
+
+    res_data = {
+        'type':4,
+        'content': f'### {dice_mult}: {total}\n{rolls}'
+    }
+
+    return 200, res_data
+
+interaction_type_dispatch={
+    1:ping,
+    2:slash_command
 }
+
 
 def handler(event, context):
     print(event)
     req_body_str = event['body']
-    print(req_body_str)
+    print(f'{type(req_body_str)}: {req_body_str}')
 
-    req_body = json.loads(req_body_str)
+    #req_body = json.loads(req_body_str)
+    req_body = req_body_str
+
+    if not DEV_MODE:
+        try:
+            headers = event['headers']
+            signature = headers["x-signature-ed25519"]
+            timestamp = headers["x-signature-timestamp"]
+
+            verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
+            verify_key.verify(f'{timestamp}{req_body_str}'.encode(), bytes.fromhex(signature))
+        except BadSignatureError:
+            print('WARN: Request failed signature verification')
+            return {
+                'statusCode': 401,
+                'body': 'invalid request signature'
+            }
 
     interaction_type = req_body['type']
-
-    headers = event['headers']
-
-    res_code = 200
-    res_body = {
-        'type': INTERACTION_REQ_RES[interaction_type],
-        'data': {
-            'content': 'Like, I know, right!?'
-        }
-    }
-
-    res_body_str = json.dumps(res_body)
-
-    try:
-        signature = headers["x-signature-ed25519"]
-        timestamp = headers["x-signature-timestamp"]
-
-        verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
-        verify_key.verify(f'{timestamp}{req_body_str}'.encode(), bytes.fromhex(signature))
-    except BadSignatureError:
-        res_code = 401
-        res_body_str = 'invalid request signature'
+    res_code, res_body = interaction_type_dispatch[interaction_type](req_body)
 
     return {
         'statusCode': res_code,
-        'body': res_body_str
+        'body': json.dumps(res_body)
     }
