@@ -5,6 +5,11 @@ from nacl.exceptions import BadSignatureError
 
 DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 
+INTERACTION_REQ_RES={
+    1:1, # PING -> PONG
+    2:4  # APPLICATION_COMMAND -> CHANNEL_MESSAGE_WITH_SOURCE
+}
+
 def handler(event, context):
     print(event)
     body = event['body']
@@ -20,7 +25,11 @@ def handler(event, context):
     timestamp = headers["x-signature-timestamp"]
 
     response_code = 200
-    response_body = json.dumps( {'type': interaction_type} )
+    response_message = {
+        'type': INTERACTION_REQ_RES[interaction_type],
+        'content': 'Like, I know, right!?'
+    }
+    response_body = json.dumps(  )
 
     try:
         verify_key.verify(f'{timestamp}{body}'.encode(), bytes.fromhex(signature))
