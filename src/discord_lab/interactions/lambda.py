@@ -29,7 +29,7 @@ def handler(event, context):
         'type': INTERACTION_REQ_RES[interaction_type],
         'content': 'Like, I know, right!?'
     }
-    response_body = json.dumps(  )
+    response_body = json.dumps(response_message)
 
     try:
         verify_key.verify(f'{timestamp}{body}'.encode(), bytes.fromhex(signature))
