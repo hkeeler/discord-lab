@@ -13,13 +13,16 @@ def ping(req_body: dict) -> tuple[int,dict]:
 
 # TODO: Improve exception handling
 def slash_command(req_body: dict) -> tuple[int,dict]:
-    dice_mult = req_body['data']['options'][0]['value']
+    dice_mult: str = req_body['data']['options'][0]['value']
     try:
         rolls = roll_die_mult(dice_mult)
+        rolls_str = ', '.join([str(r) for r in rolls])
         total = sum(rolls)
-        content = f'### {dice_mult}: {total}\n{rolls}'
+
+        content = f'### {total}\n{dice_mult.upper()}: {rolls_str}'
     except DieParseException as dpe:
-        content = str(dpe)
+        content = f'### ???\n{dpe}'
+
     res_data = {
         'type':4,
         'data': {
