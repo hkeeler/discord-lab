@@ -6,7 +6,7 @@ from nacl.exceptions import BadSignatureError
 from discord_lab.dice import roll_die_mult
 
 DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
-DEV_MODE = True
+DEV_MODE = False
 
 def ping(req_body: dict) -> tuple[int,dict]:
     return 200, {'type':1}
@@ -33,7 +33,7 @@ interaction_type_dispatch={
 def handler(event, context):
     print(event)
     req_body_str = event['body']
-    print(f'{type(req_body_str)}: {req_body_str}')
+    print(req_body_str)
 
     req_body = json.loads(req_body_str)
 
@@ -54,8 +54,9 @@ def handler(event, context):
 
     interaction_type = req_body['type']
     res_code, res_body = interaction_type_dispatch[interaction_type](req_body)
+    res_body_str = json.dumps(res_body)
 
     return {
         'statusCode': res_code,
-        'body': json.dumps(res_body)
+        'body': res_body_str
     }
