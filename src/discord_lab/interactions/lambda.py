@@ -19,7 +19,9 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
     res_data = {
         'type':4,
-        'content': f'### {dice_mult}: {total}\n{rolls}'
+        'data': {
+            'content': f'### {dice_mult}: {total}\n{rolls}'
+        }
     }
 
     return 200, res_data
@@ -55,6 +57,7 @@ def handler(event, context):
     interaction_type = req_body['type']
     res_code, res_body = interaction_type_dispatch[interaction_type](req_body)
     res_body_str = json.dumps(res_body)
+    print(res_body_str)
 
     return {
         'statusCode': res_code,
