@@ -11,6 +11,7 @@ packages = [{ include = "*", from = "src" }]
 python = "^3.12"
 discord-interactions = "^0.4.0"
 requests = "^2.32.3"
+pyyaml = "^6.0.2"
 
 
 [build-system]
