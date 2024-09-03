@@ -1,50 +1,66 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import IntEnum
 import re
 from secrets import randbelow
 
-class DieSides(IntEnum):
-    FOUR = 4
-    SIX = 6
-    EIGHT = 8
-    TEN = 10
-    TWELVE = 12
-    TWENTY = 20
-    HUNDRED = 100
-
-
-@dataclass
-class Die:
-    sides: DieSides
-
-    def roll(self) -> int:
-        return randbelow(self.sides) + 1
-    
 
 class DieParseException(Exception):
     pass
 
 
-def parse_die_mult(die_mult: str) -> tuple[Die,int]:
-    match = re.match(r'^(\d+)?[dD](\d+)$', die_mult.strip())
-    if not match:
-        raise DieParseException(f'"{die_mult}" is invalid. Should be of the form D20 or 3D6.')
-    
-    mult = int(match.group(1) or "1")
-    parsed_sides = int(match.group(2))
-    
-    try:
-        sides = DieSides(parsed_sides)
-    except ValueError:
-        valid_sides = ', '.join([str(x.value) for x in DieSides])
-        raise DieParseException(f'{parsed_sides}-sided dice not supported. Must be one of: {valid_sides}')
-
-    die = Die(sides)
-
-    return die, mult
+@dataclass
+class DieRoll:
+    value: int
+    type: DieType
 
 
-def roll_die_mult(die_mult: str) -> list[int]:
-    die, mult = parse_die_mult(die_mult)
+class DieType(IntEnum):
+    D4 = 4
+    D6 = 6
+    D8 = 8
+    D10 = 10
+    D12 = 12
+    D20 = 20
+    D100 = 100
 
-    return [die.roll() for d in range(mult)]
+    def roll(self) -> DieRoll:
+        return DieRoll(randbelow(self) + 1, self)
+
+
+@dataclass
+class DieMultiplier:
+    type: DieType
+    multiplier: int
+
+    def roll(self) -> tuple[int,list[DieRoll]]:
+        rolls = [self.type.roll() for x in range(self.multiplier)]
+
+        return sum(r.value for r in rolls), rolls
+
+
+    @staticmethod
+    def parse(die_mult: str) -> DieMultiplier:
+
+        # regex for parsing "3D6" style die side and multiplier strings
+        match = re.match(r'^(\d+)?[dD](\d+)$', die_mult.strip())
+
+        if not match:
+            raise DieParseException(f'"{die_mult}" is invalid. Should be of the form D20 or 3D6.')
+        
+        mult = int(match.group(1) or "1")
+        parsed_sides = int(match.group(2))
+        
+        try:
+            die_type = DieType(parsed_sides)
+        except ValueError:
+            valid_sides = ', '.join([str(x.value) for x in DieType])
+            raise DieParseException(f'{parsed_sides}-sided dice not supported. Must be one of: {valid_sides}')
+
+        return DieMultiplier(die_type, mult)
+
+#def roll_die_mult_str(die_mult: str) -> tuple[int,list[int]]:
+#    die_type, mult = parse_die_mult(die_mult)
+#
+#    return roll_die_mult(die_type, mult)
