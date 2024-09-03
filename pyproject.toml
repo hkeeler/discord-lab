@@ -12,6 +12,8 @@ python = "^3.12"
 discord-interactions = "^0.4.0"
 requests = "^2.32.3"
 pyyaml = "^6.0.2"
+types-pyyaml = "^6.0.12.20240808"
+types-requests = "^2.32.0.20240712"
 
 
 [build-system]
