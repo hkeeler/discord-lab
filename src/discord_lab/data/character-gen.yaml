@@ -1,0 +1,93 @@
+ancestry:
+  dice_type: 12
+  items:
+    - name: Human
+      rolls: [1,2,3,4]
+    - name: Elf
+      rolls: [5,6]
+    - name: Dwarf
+      rolls: [7,8]
+    - name: Halfling
+      rolls: [9,10]
+    - name: Half-orc
+      rolls: [11]
+    - name: Goblin
+      rolls: [12]
+background:
+  dice_type: 20
+  items:
+    - name: Urchin
+      description: You grew up in the merciless streets of a large city.
+      rolls: [1]
+    - name: Wanted
+      description: There's a price on your head, but you have allies.
+      rolls: [2]
+    - name: Cult Initiate
+      description: You know blasphemous secrets and rituals.
+      rolls: [3]
+    - name: Thieves' Guild
+      description: You have connections, contacts, and debts.
+      rolls: [4]
+    - name: Banished
+      description: Your people cast you out for supposed crimes.
+      rolls: [5]
+    - name: Orphaned
+      description: An unusual guardian rescued and raised you.
+      rolls: [6]
+    - name: Wizard's Apprentice
+      description: You have a knack and eye for magic.
+      rolls: [7]
+    - name: Jeweler
+      description: You can easily appraise value and authenticity.
+      rolls: [8]
+    - name: Herbalist
+      description: You know plants, medicines, and poisons.
+      rolls: [9]
+    - name: Barbarian
+      description: You left the horde, but it never quite left you.
+      rolls: [10]
+    - name: Mercenary
+      description: You fought friend and foe alike for your coin.
+      rolls: [11]
+    - name: Sailor
+      description: Pirate, privateer, or merchant — the seas are yours.
+      rolls: [12]
+    - name: Acolyte
+      description: You're well trained in religious rites and doctrines.
+      rolls: [13]
+    - name: Soldier
+      description: You served as a fighter in an organized army.
+      rolls: [14]
+    - name: Ranger
+      description: The woods and wilds are your true home.
+      rolls: [15]
+    - name: Scout
+      description: You survived on stealth, observation, and speed.
+      rolls: [16]
+    - name: Minstrel
+      description: You've traveled far with your charm and talent.
+      rolls: [17]
+    - name: Scholar
+      description: You know much about ancient history and lore.
+      rolls: [18]
+    - name: Noble
+      description: A famous name has opened many doors for you.
+      rolls: [19]
+    - name: Chirurgeon
+      description: You know anatomy, surgery, and first aid.
+      rolls: [20]
+alignment:
+  dice_type: 6
+  items:
+    - name: Lawful
+      code: LAWFUL
+      description: Lawful characters align themselves with fairness, order, and virtue. Lawful characters operate from a “good of the whole” mentality.
+      rolls: [1,2,3]
+    - name: Neutral
+      code: NEUTRAL
+      description: Neutral characters find balance between Law and Chaos. They align with the cycle of growth and decline, adopting a “nature must take its course” mentality.
+      rolls: [4,5]
+    - name: Chaotic
+      code: CHAOTIC
+      description: Chaotic characters align themselves with destruction, ambition, and wickedness. Chaotic characters adopt a “survival of the fittest” mentality.
+      rolls: [6]

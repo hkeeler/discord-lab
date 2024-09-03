@@ -1,0 +1,13 @@
+d12,gear_name,gear_codes
+1,Torch,torch
+2,Dagger,dagger
+3,Pole,pole
+4,Shortbow and 5 arrows,shortbow;arrows:5
+5,"Rope, 60'",rope
+6,"Oil, flask",oil_flask
+7,Crowbar,crowbar
+8,Iron spikes (10),iron_spikes:10
+9,Flint and steel,flint_and_steel
+10,Grappling hook,grappling_hook
+11,Club,club
+12,Caltrops (one bag),caltrops

@@ -1,0 +1,16 @@
+id,name,cost,slots,type_ranges,handed_damages,properties
+bastard_sword,Bastard sword,10 gp,2,M:C,H1:1d8;H2:1d10,V
+club,Club,5 cp,1,M:C,H1:1d4,
+crossbow,Crossbow,8 gp,1,R:F,H2:1d6,2H;L
+dagger,Dagger,1 gp,1,M:C;R:N,H1:1d4,F;Th
+greataxe,Greataxe,10 gp,2,M:C,H1:1d8;H2:1d10,V
+greatsword,Greatsword,12 gp,2,M:C,H2:1d12,2H
+javelin,Javelin,5 sp,1,M:C;R:F,H1:1d4,Th
+longbow,Longbow,8 gp,1,R:F,H2:1d8,2H
+longsword,Longsword,9 gp,1,M:C,H1:1d8,
+mace,Mace,5 gp,1,M:C,H1:1d6,
+shortbow,Shortbow,6 gp,1,R:F,H2:1d4,2H
+shortsword,Shortsword,7 gp,1,M:C,H1:1d6,
+spear,Spear,5 sp,1,M:C;R:N,H1:1d6,Th
+staff,Staff,5 sp,1,M:C,H2:1d4,2H
+warhammer,Warhammer,10 gp,1,M:C,H2:1d10,2H

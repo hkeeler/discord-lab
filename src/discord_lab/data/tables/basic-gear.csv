@@ -1,0 +1,17 @@
+id,name,cost,slots,per_slot,free_to_carry,description
+arrows,Arrows,1 gp,1,20,0,Ammunition for shortbows or longbows
+backpack,Backpack,2 gp,1,1,1,Holds all the gear you can carry. Don't lose it.
+caltrops,Caltrops (one bag),5 sp,1,1,0,Tiny triangle-shaped iron spikes. Living creatures who step on caltrops take 1 damage and can only move at half speed for 10 rounds.
+crossbows,Crossbow bolts,1 gp,1,20,0,Ammunition for crossbows.
+crowbar,Crowbar,5 sp,1,1,0,Grants advantage on checks to pry open stuck objects.
+flask,Flask or bottle,3 sp,1,1,0,Glass containers that hold one draught of liquid.
+flint_and_steel,Flint and steel,5 sp,1,1,0,"A small fire starter. With it, routine attempts to light a fire always succeed."
+grappling_hook,Grappling hook,1 gp,1,1,0,A rope anchor with three curved tines.
+iron_spikes,Iron spikes,1 gp,1,10,0,Each has a hole for threading rope. Can be hammered in with weapons or other iron spikes.
+lantern,Lantern,5 gp,1,1,0,Casts light up to a double near distance Requires oil. Has a shutter to hide the light.
+mirror,Mirror,10 gp,1,1,0,"A small, polished mirror."
+oil_flask,"Oil, flask",5 sp,1,1,0,"Fuels a lantern for one hour of real time. One flask covers a close area and burns for 4 rounds, dealing 1d4 damage each round."
+pole,Pole,5 sp,1,1,0,"Wooden, 10' long."
+rations,Rations,5 sp,1,3,0,One day of food and water supply for one person.
+rope,"Rope, 60'",1 gp,1,1,0,"Hemp, 60’ long."
+torch,Torch,5 sp,1,1,0,Sheds light to a near distance. Burns for one hour of real time.
