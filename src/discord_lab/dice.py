@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 import re
 from secrets import randbelow
+from typing import override
 
 
 class DieParseException(Exception):
@@ -29,7 +30,7 @@ class DieType(IntEnum):
         return DieRoll(randbelow(self) + 1, self)
 
 
-@dataclass
+@dataclass(frozen=True)
 class DieMultiplier:
     type: DieType
     multiplier: int
@@ -59,6 +60,10 @@ class DieMultiplier:
             raise DieParseException(f'{parsed_sides}-sided dice not supported. Must be one of: {valid_sides}')
 
         return DieMultiplier(die_type, mult)
+
+    @override
+    def __str__(self) -> str:
+        return f"{self.multiplier}{self.type.name}"
 
 #def roll_die_mult_str(die_mult: str) -> tuple[int,list[int]]:
 #    die_type, mult = parse_die_mult(die_mult)
