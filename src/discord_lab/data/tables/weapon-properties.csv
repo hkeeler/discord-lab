@@ -1,6 +1,6 @@
 id,name,description
-F,Finesse (F),You may use your STR or DEX when attacking with this weapon.
-L,Loading (L),You must forgo moving to reload this weapon.
-Th,Thrown (Th),You may throw this weapon to make a ranged attack with it using STR or DEX. 
-2H,Two-handed (2H),You must use this weapon with two hands.
-V,Versatile (V),You can use this weapon with one or two hands. Use the higher damage die if you’re wielding it with two.
+F,Finesse,You may use your STR or DEX when attacking with this weapon.
+L,Loading,You must forgo moving to reload this weapon.
+Th,Thrown,You may throw this weapon to make a ranged attack with it using STR or DEX. 
+2H,Two-handed,You must use this weapon with two hands.
+V,Versatile,You can use this weapon with one or two hands. Use the higher damage die if you’re wielding it with two.
