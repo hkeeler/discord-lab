@@ -3,7 +3,7 @@
 from pprint import pprint
 import requests as r
 
-from discord_lab.character import *
+from discord_lab.character import Gear, Weapon, gen_0_level_char, stat_mod
 
 ascii_card_slim = """
 ┌──────────────────────────────────────────────────────┐
@@ -42,9 +42,22 @@ url = 'https://discord.com/api/webhooks/1278930481894789246/fYDqIHFsRMY00NZUvQMD
 
 char = gen_0_level_char()
 abilities_md = '\n'.join([f'{a.name}: {v:>2} / {stat_mod[v]:>2}' for a,v in char.abilities.items()])
-gear_md = '\n'.join([f'{idx+1}. {cg.gear}' for idx, cg in enumerate(char.gear)])
+attacks_md = '\n'.join([f'{idx+1}. {w.attack_str}' for idx, w in enumerate(char.weapons)]) or 'None'
+class_md = '/'.join([f'{c.name}' for c in char.classes]) or 'None'
+talents_md = '\n'.join([f'{idx+1}. {talent}' for idx, talent in enumerate(char.talents)]) or 'None'
+
+gear_mult: dict[str,int] = {}
+for cg in char.gear:
+    try: 
+        gear_mult[str(cg.gear)] += 1
+    except KeyError:
+        gear_mult[str(cg.gear)] = 1
+
+gear_md = '\n'.join([f'{idx+1}. {gear_str} {f"x{count}" if count > 1 else ""}' for idx, (gear_str, count) in enumerate(gear_mult.items())])
 
 body = {
+    'username': 'Torchie',
+    'avatar_url': "https://www.thearcanelibrary.com/cdn/shop/articles/Torchie_1600x.png",
     #'content': f'```{ascii_card_slim}```',
     #'content': '@saskwotch',
     'embeds': [
@@ -62,11 +75,10 @@ body = {
             "fields": [
                 { "name": "`Abilities`", "value": f'```{abilities_md}```', "inline": "true"},
                 { "name": "`Status`", "value": f"```Level: {char.level}\nXP: {char.xp}\n\nHP: {char.hp} / {char.hp_max}\nAC: {char.ac}```", "inline": "true"},
-                { "name": "`Character`", "value": f"```Ancestry: {char.ancestry.name}\nClass: {char.classes}\nTitle: ???\nAlignment: {char.alignment.value}\nBackground: {char.background.name}\nDeity: <Diety Name>```", "inline": "true"},
-                { "name": "`Attacks / Damage`", "value": "```1. <Weapon 1>\n2. <Weapon 2>```"},
-                { "name": "`Talents / Spells`", "value": "```1. <Talent 1>\n2. <Talent 2>```"},
-                #{ "name": f"`Gear (?/{char.gear_slots})`", "value": "```1. Rope (1)\n2. Longsword (1)\n3. Shield (1)\n4. Leather armor (1)\n5. Torch (1) x2\n6. Rations (1-3) x3```"},
-                { "name": f"`Gear (?/{char.gear_slots})`", "value": f"```{gear_md}```"},
+                { "name": "`Character`", "value": f"```Ancestry: {char.ancestry.name}\nClass: {class_md}\nTitle: ???\nAlignment: {char.alignment.value}\nBackground: {char.background.name}\nDeity: {char.diety.name}```", "inline": "true"},
+                { "name": "`Attacks`", "value": f"```{attacks_md}```"},
+                { "name": "`Talents / Spells`", "value": f"```{talents_md}```"},
+                { "name": f"`Gear ({char.gear_slots_used}/{char.gear_slots})`", "value": f"```{gear_md}```"},
             ]
         }
     ]

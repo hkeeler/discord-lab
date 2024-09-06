@@ -4,11 +4,12 @@ import csv
 from dataclasses import dataclass
 from enum import Enum, StrEnum
 from importlib.resources import open_text, open_binary
-from typing import Optional, override
+from typing import Optional, TypeVar, override
 
 from discord_lab.dice import DieMultiplier, DieRoll, DieType
 
 import yaml
+
 
 @dataclass(frozen=True)
 class Language:
@@ -26,7 +27,7 @@ class CoinType(Enum):
     CP = 'Copper (CP)'
 
 
-@dataclass
+@dataclass(frozen=True)
 class CoinAmount:
     amount: int
     type: CoinType
@@ -65,8 +66,12 @@ class Gear:
         return f'{self.name} ({self.slots}{per_slot_str})'
 
     @property
-    def equipable(self) -> bool:
+    def is_equipable(self) -> bool:
         return False
+
+    @property
+    def is_bundled(self) -> bool:
+        return True
 
     @staticmethod
     def from_csv(csv_dict: dict['str',str]) -> Gear:
@@ -145,6 +150,19 @@ class WeaponHanded(Enum):
     H1 = 'One-handed'
     H2 = 'Two-handed'
 
+# Q: Is this still needed?
+#@dataclass
+#class CharacterWeaponDamage:
+#    weapon: Weapon
+#    handed_damage: dict[WeaponHanded,DieMultiplier]
+#
+#    @override
+#    def __str__(self) -> str:
+#        h1_dmg = self.handed_damage.get(WeaponHanded.H1,None)
+#        h2_dmg = self.handed_damage.get(WeaponHanded.H2,None)
+#
+#        return f"{self.weapon.name} / M "
+
 
 @dataclass(frozen=True)
 class Weapon(Gear):
@@ -152,14 +170,27 @@ class Weapon(Gear):
     handed_damage: dict[WeaponHanded,DieMultiplier]
     properties: set[WeaponProperty]
 
-    @property
     @override
-    def equipable(self) -> bool:
+    @property
+    def is_equipable(self) -> bool:
         return True
 
     @override
+    @property
+    def is_bundled(self) -> bool:
+        return False
+
+    @property
+    def attack_str(self) -> str:
+        handed_dmg_str = "/".join([str(dm) for wh, dm in self.handed_damage.items()])
+        range_type_str = "/".join([f"{t.value}({r.name})" for t,r in self.type_range.items()])
+        props_str = ",".join([p.id for p in self.properties])
+
+        return f"{self.name}: {handed_dmg_str} {range_type_str} {props_str or ''}"
+
+    @override
     @staticmethod
-    def from_csv(csv_dict: dict['str',str]) -> Gear:
+    def from_csv(csv_dict: dict['str',str]) -> Weapon:
         id=csv_dict['id']
         name=csv_dict['name']
         
@@ -208,7 +239,7 @@ class Armor(Gear):
 
     @property
     @override
-    def equipable(self) -> bool:
+    def is_equipable(self) -> bool:
         return True
 
 
@@ -265,11 +296,10 @@ stat_mod = {
     18: 4,
 }
 
-# FIXME: Add descriptions?
 class Alignment(Enum):
-    LAWFUL = 'Lawful'
-    NEUTRAL = 'Neutral'
-    CHAOTIC = 'Chaotic'
+    L = 'Lawful'
+    N = 'Neutral'
+    C = 'Chaotic'
 
 
 @dataclass(frozen=True)
@@ -291,7 +321,7 @@ class CharacterGear:
     equipt: bool
 
     def __post_init__(self):
-        if self.equipt and not self.gear.equipable:
+        if self.equipt and not self.gear.is_equipable:
             raise ValueError(f'Gear "{gear.id}" is not equipable')
 
 @dataclass
@@ -300,8 +330,10 @@ class Character:
     abilities: dict[Ability,int]
     ancestry: Ancestry
     classes: set[Class]
+    talents: list[Talent]
     alignment: Alignment
     background: Background
+    diety: Diety
     level: int # TODO: Refactor to `Level`
     hp: int
     hp_max: int
@@ -340,14 +372,36 @@ class Character:
     def gear_slots(self) -> int:
         return self.STR if self.STR > 10 else 10
     
-    #@property
-    #def gear_slots_used(self) -> int:
-    #
-    #    return [cg. for cg in self.gear]
+    @property
+    def gear_slots_used(self) -> int:
+        slots_used = 0
+        gear_by_id = {cg.gear.id: cg.gear for cg in self.gear}
 
-    # TODO: Finish this thought!
-    #@property
-    #def attacks() -> 
+        count_per_gear: dict[str,int] = {}
+        for cg in self.gear:
+            try:
+                count_per_gear[cg.gear.id] +=1
+            except KeyError:
+                count_per_gear[cg.gear.id] = 1
+
+        for id, count in count_per_gear.items():
+            gear = gear_by_id[id]
+            if gear.slots > 1:
+                slots_used += count * gear.slots
+            else:
+                div, mod = divmod(count, gear.per_slot)
+                slots_used += div + (1 if mod else 0)
+
+        return slots_used
+
+
+    @property
+    def weapons(self) -> list[Weapon]:
+        #return [x for x in self.gear if isinstance(x, Weapon)]
+        return [x.gear for x in self.gear if isinstance(x.gear, Weapon)]
+
+
+
 
 
 ########################
@@ -387,6 +441,12 @@ def roll_alignment() -> Alignment:
     return Alignment[roll_result['code']]
 
 
+def roll_diety(alignment: Alignment) -> Diety:
+    roll_val = DieType.D10.roll().value
+
+    return DIETIES[(roll_val, alignment)]
+
+
 def roll_background() -> Background:
     roll_result = roll_character_meta('background')
 
@@ -407,14 +467,19 @@ def gen_base_character() -> Character:
 
     ancestry = roll_ancestry()
     char_name = roll_character_name(ancestry)
+    alignment=roll_alignment()
+    diety = roll_diety(alignment)
+    background=roll_background()
 
     return Character(
         name=char_name,
         abilities=abilities,
         ancestry=ancestry,
         classes=set(),
-        alignment=roll_alignment(),
-        background=roll_background(),
+        alignment=alignment,
+        background=background,
+        diety=diety,
+        talents=[],
         gear=[],
         level=0,
         hp_max=0,
@@ -467,12 +532,35 @@ CHARACTER_META = yaml.safe_load(
 
 # TODO: Flesh out Ancestry and improve ex handling
 CHARACTER_NAMES: dict[tuple[int,str],str] = {}
-for csv_dict in csv.DictReader(
+for row in csv.DictReader(
     open_text('discord_lab.data.tables', 'character-names.csv')
 ):
-    roll = int(csv_dict.pop('d20'))
-    for ancestry_name, char_name in csv_dict.items():
+    roll = int(row.pop('d20'))
+    for ancestry_name, char_name in row.items():
         CHARACTER_NAMES[(roll,ancestry_name)] = char_name
+
+
+DIETIES: dict[tuple[int,Alignment],Diety] = {}
+for row in csv.DictReader(
+    open_text('discord_lab.data.tables', 'dieties.csv')
+):
+    alignment = Alignment[row['alignment']]
+
+    roll_range_str = row['d10']
+    roll_range_split = roll_range_str.split('-')
+    if len(roll_range_split) == 1: 
+        start = int(roll_range_split[0])
+        end = start + 1
+    elif len(roll_range_split) == 2:
+        start = int(roll_range_split[0])
+        end = int(roll_range_split[1]) + 1
+    else:
+        raise ValueError(f'"{roll_range_str}" is not a valid roll range')
+
+    for x in range(start, end):
+        diety = Diety(row['name'], row['description'], alignment)
+        DIETIES[(x,alignment)] = diety
+
 
 BASIC_GEAR: dict[str,Gear] = {
     x['id']:Gear.from_csv(x) for x in csv.DictReader(
@@ -495,10 +583,10 @@ WEAPON_GEAR: dict[str,Weapon] = {
 ALL_GEAR: dict[str,Gear] = BASIC_GEAR | WEAPON_GEAR
 
 LEVEL_0_GEAR: dict[int,list[GearQuantity]] = {}
-for csv_dict in csv.DictReader(
+for row in csv.DictReader(
     open_text('discord_lab.data.tables', 'starting-gear-level-0.csv')
 ):
-    gear_codes = csv_dict['gear_codes']
+    gear_codes = row['gear_codes']
     gear_code_qtys = gear_codes.split(';')
 
     for gear_code_qty in gear_code_qtys:
@@ -520,7 +608,7 @@ for csv_dict in csv.DictReader(
         gear_quantity = GearQuantity(gear, qty)
 
         # TODO: Add parsing and out-of-range exception handling
-        d12_roll = int(csv_dict['d12'])
+        d12_roll = int(row['d12'])
 
         try:
             LEVEL_0_GEAR[d12_roll].append(gear_quantity)
