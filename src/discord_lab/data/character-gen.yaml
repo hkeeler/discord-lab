@@ -80,14 +80,14 @@ alignment:
   dice_type: 6
   items:
     - name: Lawful
-      code: LAWFUL
+      code: L
       description: Lawful characters align themselves with fairness, order, and virtue. Lawful characters operate from a “good of the whole” mentality.
       rolls: [1,2,3]
     - name: Neutral
-      code: NEUTRAL
+      code: N
       description: Neutral characters find balance between Law and Chaos. They align with the cycle of growth and decline, adopting a “nature must take its course” mentality.
       rolls: [4,5]
     - name: Chaotic
-      code: CHAOTIC
+      code: C
       description: Chaotic characters align themselves with destruction, ambition, and wickedness. Chaotic characters adopt a “survival of the fittest” mentality.
       rolls: [6]
