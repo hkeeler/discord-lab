@@ -37,6 +37,16 @@ EMOJI_ID_BY_CODE = {
     'd10_3':'<:d10_3:1282232104855408701>',
     'd10_2':'<:d10_2:1282232090938708035>',
     'd10_1':'<:d10_1:1282232071707824140>',
+    'd10_0':'<:d10_0:1282479588311830629>',
+    'd10_00':'<:d10_00:1282474745606049865>',
+    'd10_90':'<:d10_90:1282474994336796692>',
+    'd10_80':'<:d10_80:1282474906071728158>',
+    'd10_70':'<:d10_70:1282474883162574919>',
+    'd10_60':'<:d10_60:1282474867303907361>',
+    'd10_50':'<:d10_50:1282474851503706157>',
+    'd10_40':'<:d10_40:1282474836551139380>',
+    'd10_30':'<:d10_30:1282474822055624776>',
+    'd10_20':'<:d10_20:1282474763754803240>',
     'd12_12':'<:d12_12:1282232530807951421>',
     'd12_11':'<:d12_11:1282232516375478346>',
     'd12_10':'<:d12_10:1282232497718951968>',
@@ -79,17 +89,40 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
     die_mult_str: str = req_body['data']['options'][0]['value']
     try:
         die_mult = DieMultiplier.parse(die_mult_str)
+        die_type = die_mult.type
         total, rolls = die_mult.roll()
 
-        emoji_ids = [
-            EMOJI_ID_BY_CODE[f"{r.type.name.lower()}_{r.value}"] for r in rolls
-        ]
+        if die_type == DieMultiplier.type.D100:
+            for roll in rolls:
+                if roll.value == 100:
+                    tens_emoji_id = EMOJI_ID_BY_CODE["d10_00"]
+                    ones_emoji_id = EMOJI_ID_BY_CODE["d10_0"]
+                else:
+                    tens_val, ones_val = divmod(roll.value, 10)
+                    tens_val *= 10
 
-        if len(emoji_ids) == 1:
-            content = emoji_ids[0]
+                    tens_emoji_id = EMOJI_ID_BY_CODE[f"d10_{tens_val}"]
+                    ones_emoji_id = EMOJI_ID_BY_CODE[f"d10_{ones_val}"]
+                
+
+            if len(rolls) == 1:
+                content = f"{tens_emoji_id}{ones_emoji_id}"
+            else:
+                rolls_str = ' '.join(f"{tens_emoji_id}{ones_emoji_id} ({roll.value})")
+                content = f"# {total}\n# {rolls_str}"
+            
+            
         else:
-            rolls_str = '+'.join(emoji_ids)
-            content = f"# {rolls_str}= {total}"
+            emoji_ids = [
+                EMOJI_ID_BY_CODE[f"{r.type.name.lower()}_{r.value}"] for r in rolls
+            ]
+
+            if len(emoji_ids) == 1:
+                content = emoji_ids[0]
+            else:
+                rolls_str = ' '.join(emoji_ids)
+                content = f"# {total}\n# {rolls_str}"
+        
     except DieParseException as dpe:
         content = f'# ???\n{dpe}'
 
