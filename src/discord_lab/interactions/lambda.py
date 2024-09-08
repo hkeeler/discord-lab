@@ -94,7 +94,7 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
         print(f"die_mult_str: {die_mult_str}, die_type: {die_type}")
 
-        if die_type == DieMultiplier.type.D100:
+        if die_type == DieType.D100:
             for roll in rolls:
                 if roll.value == 100:
                     tens_emoji_id = EMOJI_ID_BY_CODE["d10_00"]
