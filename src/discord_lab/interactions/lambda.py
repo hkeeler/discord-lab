@@ -19,9 +19,9 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
         total, rolls = die_mult.roll()
 
         if len(rolls) == 1:
-            content = f":{die_mult.type.name}_{total}:"
+            content = f":{die_mult.type.name.lower()}_{total}:"
         else:
-            rolls_str = '+'.join([f":{r.type.name}_{r.value}:" for r in rolls])
+            rolls_str = '+'.join([f":{r.type.name.lower()}_{r.value}:" for r in rolls])
             
             #content = f'## {total}\n{die_mult_str.upper()}: {rolls_str}'
             content = f"# {rolls_str}= {total}"
