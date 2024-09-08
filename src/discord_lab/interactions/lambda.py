@@ -82,7 +82,7 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
         total, rolls = die_mult.roll()
 
         emoji_ids = [
-            EMOJI_ID_BY_CODE[f":{r.type.name.lower()}_{r.value}:"] for r in rolls
+            EMOJI_ID_BY_CODE[f"{r.type.name.lower()}_{r.value}"] for r in rolls
         ]
 
         if len(emoji_ids) == 1:
