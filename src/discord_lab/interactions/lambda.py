@@ -92,6 +92,8 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
         die_type = die_mult.type
         total, rolls = die_mult.roll()
 
+        print(f"die_mult_str: {die_mult_str}, die_type: {die_type}")
+
         if die_type == DieMultiplier.type.D100:
             for roll in rolls:
                 if roll.value == 100:
@@ -103,14 +105,12 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
                     tens_emoji_id = EMOJI_ID_BY_CODE[f"d10_{tens_val}"]
                     ones_emoji_id = EMOJI_ID_BY_CODE[f"d10_{ones_val}"]
-                
 
             if len(rolls) == 1:
                 content = f"{tens_emoji_id}{ones_emoji_id}"
             else:
                 rolls_str = ' '.join(f"{tens_emoji_id}{ones_emoji_id} ({roll.value})")
                 content = f"# {total}\n# {rolls_str}"
-            
             
         else:
             emoji_ids = [
