@@ -24,7 +24,7 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
             rolls_str = '+'.join([f":{r.type.name.lower()}_{r.value}:" for r in rolls])
             
             #content = f'## {total}\n{die_mult_str.upper()}: {rolls_str}'
-            content = f"# {rolls_str}= {total}"
+            content = f"# {rolls_str}= {total} <:d6_1:1282212244398276640> <:d6_1:>"
     except DieParseException as dpe:
         content = f'### ???\n{dpe}'
 
