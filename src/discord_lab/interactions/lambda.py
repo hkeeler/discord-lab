@@ -3,7 +3,7 @@ import json
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
-from discord_lab.dice import roll_die_mult, DieParseException
+from discord_lab.dice import *
 
 DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 DEV_MODE = False
@@ -13,13 +13,18 @@ def ping(req_body: dict) -> tuple[int,dict]:
 
 # TODO: Improve exception handling
 def slash_command(req_body: dict) -> tuple[int,dict]:
-    dice_mult: str = req_body['data']['options'][0]['value']
+    die_mult_str: str = req_body['data']['options'][0]['value']
     try:
-        rolls = roll_die_mult(dice_mult)
-        rolls_str = ', '.join([str(r) for r in rolls])
-        total = sum(rolls)
+        die_mult = DieMultiplier.parse(die_mult_str)
+        total, rolls = die_mult.roll()
 
-        content = f'### {total}\n{dice_mult.upper()}: {rolls_str}'
+        if len(rolls) == 1:
+            content = f":{die_mult.type.name}_{total}:"
+        else:
+            rolls_str = '+'.join([f":{r.type.name}_{r.value}:" for r in rolls])
+            
+            #content = f'## {total}\n{die_mult_str.upper()}: {rolls_str}'
+            content = f"# {rolls_str}= {total}"
     except DieParseException as dpe:
         content = f'### ???\n{dpe}'
 
