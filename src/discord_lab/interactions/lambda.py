@@ -95,21 +95,24 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
         print(f"die_mult_str: {die_mult_str}, die_type: {die_type}")
 
         if die_type == DieType.D100:
+            emoji_pairs = []
             for roll in rolls:
                 if roll.value == 100:
-                    tens_emoji_id = EMOJI_ID_BY_CODE["d10_00"]
-                    ones_emoji_id = EMOJI_ID_BY_CODE["d10_0"]
+                    emoji_pairs.append((roll.value, EMOJI_ID_BY_CODE["d10_00"], EMOJI_ID_BY_CODE["d10_0"]))
                 else:
                     tens_val, ones_val = divmod(roll.value, 10)
                     tens_val *= 10
 
-                    tens_emoji_id = EMOJI_ID_BY_CODE[f"d10_{tens_val}"]
+                    tens_emoji_id = EMOJI_ID_BY_CODE[f"d10_{tens_val}"] if tens_val else EMOJI_ID_BY_CODE["d10_00"]
                     ones_emoji_id = EMOJI_ID_BY_CODE[f"d10_{ones_val}"]
 
-            if len(rolls) == 1:
-                content = f"{tens_emoji_id}{ones_emoji_id}"
+                    emoji_pairs.append((roll.value, tens_emoji_id, ones_emoji_id))
+
+            if len(emoji_pairs) == 1:
+                ep = emoji_pairs[0]
+                content = f"{ep[1]}{ep[2]} ({ep[0]})"
             else:
-                rolls_str = ' '.join(f"{tens_emoji_id}{ones_emoji_id} ({roll.value})")
+                rolls_str = ' '.join([f"{ep[1]}{ep[2]} ({ep[0]})" for ep in emoji_pairs])
                 content = f"# {total}\n# {rolls_str}"
             
         else:
