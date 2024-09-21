@@ -5,7 +5,7 @@ description = "Experiments with Discord bots, APIs, etc."
 authors = ["Hans Keeler <hkeeler@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "*", from = "src" }]
+packages = [{ include = "discord_lab", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -15,6 +15,16 @@ pyyaml = "^6.0.2"
 types-pyyaml = "^6.0.12.20240808"
 types-requests = "^2.32.0.20240712"
 
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
+pytest-mock = "^3.14.0"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+    "-vv",
+]
 
 [build-system]
 requires = ["poetry-core"]
