@@ -35,6 +35,10 @@ class DieMultiplier:
     type: DieType
     multiplier: int
 
+    def __post_init__(self):
+        if self.multiplier < 1:
+            raise ValueError(f'Die multiplier {self.multiplier} is less than 1')
+
     def roll(self) -> tuple[int,list[DieRoll]]:
         rolls = [self.type.roll() for x in range(self.multiplier)]
 
@@ -65,7 +69,3 @@ class DieMultiplier:
     def __str__(self) -> str:
         return f"{self.multiplier}{self.type.name}"
 
-#def roll_die_mult_str(die_mult: str) -> tuple[int,list[int]]:
-#    die_type, mult = parse_die_mult(die_mult)
-#
-#    return roll_die_mult(die_type, mult)
