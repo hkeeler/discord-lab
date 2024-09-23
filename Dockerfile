@@ -9,4 +9,4 @@ COPY src poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-cache
 
-CMD [ "discord_lab.interactions.lambda.handler" ]
+CMD [ "discord_lab.interactions.aws_lambda.handler" ]
