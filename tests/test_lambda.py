@@ -1,5 +1,5 @@
 from discord_lab.dice import DieExpr, DieExprRoll, DieRoll, DieType, IntTermOperationResult, LabeledTerm, MultiDie, MultiDieRoll, MultiDieTermOperationResult, Operation, TermOperation
-from discord_lab.interactions.lambda import die_roll_to_md, render_expr_roll, render_multidie_roll
+from discord_lab.interactions.aws_lambda import die_roll_to_md, render_expr_roll, render_multidie_roll
 
 
 class TestDieRollToMd:
