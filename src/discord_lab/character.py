@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
-from enum import Enum, StrEnum
-from importlib.resources import open_text, open_binary
-from typing import Optional, TypeVar, override
+from enum import Enum
+from importlib.resources import open_binary, open_text
+from typing import Optional, override
 
-from discord_lab.dice import DieMultiplier, DieRoll, DieType
+# FIXME: Fix open_binary and open_text warnings
+import warnings
+warnings.filterwarnings("ignore",category=DeprecationWarning)
+
+from discord_lab.dice import MultiDie,DieType, MultiDieRoll
 
 import yaml
 
@@ -167,7 +171,7 @@ class WeaponHanded(Enum):
 @dataclass(frozen=True)
 class Weapon(Gear):
     type_range: dict[WeaponType,Range]
-    handed_damage: dict[WeaponHanded,DieMultiplier]
+    handed_damage: dict[WeaponHanded,MultiDie]
     properties: set[WeaponProperty]
 
     @override
@@ -205,12 +209,12 @@ class Weapon(Gear):
                 type_id, range_id = type_range_str.split(':')
                 type_range[WeaponType[type_id]] = Range[range_id]
             
-            handed_damage: dict[WeaponHanded,DieMultiplier] = {}
+            handed_damage: dict[WeaponHanded,MultiDie] = {}
             handed_damages_str = csv_dict['handed_damages']
 
             for handed_damage_str in handed_damages_str.split(';'):
                 handed_str, damage_str = handed_damage_str.split(':')
-                handed_damage[WeaponHanded[handed_str]] = DieMultiplier.parse(damage_str)
+                handed_damage[WeaponHanded[handed_str]] = MultiDie.parse(damage_str)
 
             properties_str = csv_dict['properties']
             
@@ -401,6 +405,12 @@ class Character:
         return [x.gear for x in self.gear if isinstance(x.gear, Weapon)]
 
 
+    @staticmethod
+    def gen(level: int) -> Character:
+        if level > 0:
+            raise ValueError("Only level 0 characters currently supported")
+        
+        return gen_0_level_char()
 
 
 
@@ -408,8 +418,8 @@ class Character:
 # Rollers / Generators #
 ########################
 
-def roll_ability_scores() -> dict[Ability,tuple[int,list[DieRoll]]]:
-    return {a: DieMultiplier(DieType.D6, 3).roll() for a in Ability}
+def roll_ability_scores() -> dict[Ability,MultiDieRoll]:
+    return {a: MultiDie(DieType.D6, 3).roll() for a in Ability}
 
 
 def roll_character_meta(meta_type_key: str) -> dict:
@@ -417,7 +427,7 @@ def roll_character_meta(meta_type_key: str) -> dict:
     die_type = DieType(meta_type['dice_type'])
     roll = die_type.roll().value
 
-    # TODO: Improve excpetion handling for misconfigured files
+    # TODO: Improve excpetion handling for misconfigured files 
     for item in meta_type['items']:
         if roll in item['rolls']:
             return item
@@ -458,18 +468,14 @@ def roll_background() -> Background:
 
 def gen_base_character() -> Character:
     abilities = {
-        ability: rolls[0] for ability, rolls in roll_ability_scores().items()
+        ability: rolls.value for ability, rolls in roll_ability_scores().items()
     }
-
-    # TODO: Figure out a good way of showing all die rolls
-    #for ability, score in abilities.items():
-    #    print(f'{ability.name}: {score}')
 
     ancestry = roll_ancestry()
     char_name = roll_character_name(ancestry)
-    alignment=roll_alignment()
+    alignment = roll_alignment()
     diety = roll_diety(alignment)
-    background=roll_background()
+    background = roll_background()
 
     return Character(
         name=char_name,
