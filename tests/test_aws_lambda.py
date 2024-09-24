@@ -42,6 +42,7 @@ class TestDieRollToMd:
 
     def test_render_expr_roll(self):
         md = render_expr_roll(
+            '2D6 (Sword) - 2 (STR) + D4 (Acid)',
             DieExprRoll(11,[
                     MultiDieTermOperationResult(9, TermOperation(Operation.NO_OP, LabeledTerm(MultiDie(DieType.D6, 2), "Sword")), MultiDieRoll(9, [DieRoll(5, DieType.D6), DieRoll(4, DieType.D6)])),
                     IntTermOperationResult(2, TermOperation(Operation.SUB, LabeledTerm(2, "STR"))),
@@ -50,4 +51,4 @@ class TestDieRollToMd:
             )
         )
 
-        assert md == '9 <:d6_5:1282212308982169653> <:d6_4:1282212289310621717> (Sword) - 2 (STR) + <:d4_4:1282216878072135720> (Acid) = 11'
+        assert md == '# 11\n2D6 (Sword) - 2 (STR) + D4 (Acid)\n9 <:d6_5:1282212308982169653> <:d6_4:1282212289310621717> (Sword) - 2 (STR) + <:d4_4:1282216878072135720> (Acid)'

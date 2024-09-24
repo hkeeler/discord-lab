@@ -119,7 +119,7 @@ def render_multidie_roll(rolls: MultiDieRoll) -> str:
 
 
 
-def render_expr_roll(rolls: DieExprRoll) -> str:
+def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
     roll_results = rolls.results
 
     # If only a single die is rolled, just show that roll without the math bits
@@ -152,8 +152,9 @@ def render_expr_roll(rolls: DieExprRoll) -> str:
 
         rr_mds.append(rr_md)
 
-    md = " ".join(rr_mds)
-    md += f" = {rolls.value}"
+    md = f"# {rolls.value}\n"
+    md += f"{die_expr_str}\n"
+    md += " ".join(rr_mds)
 
     return md
 
@@ -162,7 +163,7 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
     die_expr_str: str = req_body['data']['options'][0]['value']
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        content = render_expr_roll(die_expr_roll)        
+        content = render_expr_roll(die_expr_str, die_expr_roll)
     except DieParseException as dpe:
         content = f'# ???\n{dpe}'
 
