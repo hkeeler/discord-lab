@@ -152,9 +152,7 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
 
         rr_mds.append(rr_md)
 
-    md = f"# {rolls.value}\n"
-    md += f"{die_expr_str}\n"
-    md += " ".join(rr_mds)
+    md = " ".join(rr_mds) + f"\n# {rolls.value}"   
 
     return md
 
