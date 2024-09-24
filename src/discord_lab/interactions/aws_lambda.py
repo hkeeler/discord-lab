@@ -110,17 +110,13 @@ def render_single_die_roll(roll: DieRoll) -> str:
 
 
 def render_multidie_roll(rolls: MultiDieRoll) -> str:
-    die_md = ' '.join([die_roll_to_md(roll) for roll in rolls.details])
-    md = f"{rolls.value} ({die_md})"
+    roll_details = rolls.details
+    if len(roll_details) == 1:
+        return render_single_die_roll(roll_details[0])
+    else:
+        die_md = ' '.join([die_roll_to_md(roll) for roll in rolls.details])
+        return f"{rolls.value} {die_md}"
 
-    return md
-
-def render_term_op(term_op: TermOperation):
-    term_op.labeled_term
-    term_op.operation
-    md = ''
-
-    return md
 
 
 def render_expr_roll(rolls: DieExprRoll) -> str:

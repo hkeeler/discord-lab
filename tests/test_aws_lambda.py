@@ -21,7 +21,7 @@ class TestDieRollToMd:
         md = render_multidie_roll(MultiDieRoll(17, [DieRoll(17, DieType.D20)]))
 
         # WARN: This is brittle. Updating die emoji images will break this.
-        assert md == '17 (<:d20_17:1282233108376059914>)'
+        assert md == '<:d20_17:1282233108376059914>'
 
 
     def test_render_multidie_roll_multi(self):
@@ -37,7 +37,7 @@ class TestDieRollToMd:
         )
 
         # WARN: This is brittle. Updating die emoji images will break this.
-        assert md == '15 (<:d6_5:1282212308982169653> <:d6_4:1282212289310621717> <:d6_6:1282212638297817198>)'
+        assert md == '15 <:d6_5:1282212308982169653> <:d6_4:1282212289310621717> <:d6_6:1282212638297817198>'
 
 
     def test_render_expr_roll(self):
@@ -50,4 +50,4 @@ class TestDieRollToMd:
             )
         )
 
-        assert md == '9 (<:d6_5:1282212308982169653> <:d6_4:1282212289310621717>) (Sword) - 2 (STR) + 4 (<:d4_4:1282216878072135720>) (Acid) = 11'
+        assert md == '9 <:d6_5:1282212308982169653> <:d6_4:1282212289310621717> (Sword) - 2 (STR) + <:d4_4:1282216878072135720> (Acid) = 11'
