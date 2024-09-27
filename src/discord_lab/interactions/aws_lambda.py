@@ -109,13 +109,15 @@ def render_single_die_roll(roll: DieRoll) -> str:
     return die_roll_to_md(roll)
 
 
-def render_multidie_roll(rolls: MultiDieRoll) -> str:
+def render_multidie_roll(rolls: MultiDieRoll, include_total: bool) -> str:
     roll_details = rolls.details
     if len(roll_details) == 1:
         return render_single_die_roll(roll_details[0])
     else:
         die_md = ' '.join([die_roll_to_md(roll) for roll in rolls.details])
-        return f"{rolls.value} {die_md}"
+        if include_total:
+            die_md += f' {rolls.value}'
+        return die_md
 
 
 
@@ -132,6 +134,8 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
                 single_roll_details = single_result.rolls.details
                 if len(single_roll_details) == 1:
                     return render_single_die_roll(single_roll_details[0])
+                
+        
 
     rr_mds = []
 
@@ -140,7 +144,8 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
             case IntTermOperationResult():
                 rr_md = str(rr.value)
             case MultiDieTermOperationResult():
-                rr_md = render_multidie_roll(rr.rolls)
+                include_total = len(roll_results) > 1
+                rr_md = render_multidie_roll(rr.rolls, include_total)
 
         op_symbol = rr.term_op.operation.value
         if op_symbol:
