@@ -65,7 +65,7 @@ def get_global_app_cmd(app_id, cmd_name:str):
     return cmd
 
 
-def sync_global_app_cmd(app_id: str, cmd_name: str, desc: str):
+def sync_global_app_cmd(app_id: str, cmd_json: dict):
     endpoint = f'{API_URL_BASE}/applications/{app_id}/commands'
 
     access_token = get_access_token(INTERACTION_SCOPES)
@@ -74,22 +74,7 @@ def sync_global_app_cmd(app_id: str, cmd_name: str, desc: str):
         'Authorization': f'Bearer {access_token}'
     }
 
-    req_data = {
-        'name': cmd_name,
-        'description': desc,
-        'options': [
-            {
-                'type': 3,
-                'name': 'dice',
-                'description': "Whatcha rollin'?",
-                'required': True,
-                'min_length': 2,
-                'max_length': 100
-            }
-        ]
-    }
-
-    res = requests.post(endpoint, headers=req_headers, json=req_data)
+    res = requests.post(endpoint, headers=req_headers, json=cmd_json)
     res_data = res.json()
 
     if res.status_code not in [200,201]:
@@ -115,3 +100,63 @@ def delete_global_app_cmd(app_id: str, cmd_name: str):
     if res.status_code != 204:
         res_data = res.json()
         raise RuntimeError(f'Failed to authenticate: {res_data}')
+
+
+app_id = os.environ['DISCORD_APP_ID']
+
+# `/roll` command
+roll_cmd = {
+    'name': 'roll',
+    'description': "Let's roll some dice!",
+    'options': [
+        {
+            'type': 3,
+            'name': 'dice',
+            'description': "Dice expression",
+            'required': True,
+            'min_length': 2,
+            'max_length': 100
+        }
+    ]
+}
+sync_global_app_cmd(app_id, roll_cmd)
+
+
+# `/askroll` command
+askroll_cmd = {
+    'name': 'askroll',
+    'description': "Ask someone to roll some dice!",
+    'options': [
+        {
+            'type': 6,
+            'name': 'user',
+            'description': "User",
+            'required': True
+        },
+        {
+            'type': 3,
+            'name': 'dice',
+            'description': "Dice expression",
+            'required': True,
+            'min_length': 2,
+            'max_length': 100
+        },
+        {
+            'type': 3,
+            'name': 'description',
+            'description': "Description",
+            'required': False,
+            'min_length': 5,
+            'max_length': 100
+        },
+        {
+            'type': 4,
+            'name': 'must-beat',
+            'description': "Must beat?",
+            'required': False,
+            'min_value': 1,
+            'max_value': 100
+        }
+    ]
+}
+sync_global_app_cmd(app_id, askroll_cmd)

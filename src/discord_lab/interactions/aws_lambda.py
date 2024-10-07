@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
@@ -81,9 +82,6 @@ EMOJI_ID_BY_CODE = {
     'D20_1':'<:d20_1:1282232679512805467>',
 }
 
-def ping(req_body: dict) -> tuple[int,dict]:
-    return 200, {'type':1}
-
 
 def die_roll_to_md(roll: DieRoll) -> str:
     if roll.type == DieType.D100:       
@@ -162,8 +160,22 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
     return md
 
 
-def slash_command(req_body: dict) -> tuple[int,dict]:
-    die_expr_str: str = req_body['data']['options'][0]['value']
+def option_name_to_value(req_body: dict, option_name: str, required: bool = True) -> Any:
+    try:
+        for option in req_body['data']['options']:
+            if option['name'] == option_name:
+                return option['value']            
+    except KeyError:
+        raise ValueError(f"Invalid slash command request format. Could not retrieve option: {option_name}")
+
+    if required:
+        raise ValueError(f"Required option not in request: {option_name}")
+    else:
+        return None
+
+
+def roll_cmd(req_body: dict) -> tuple[int,dict]:
+    die_expr_str = option_name_to_value(req_body, 'dice')
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
         content = render_expr_roll(die_expr_str, die_expr_roll)
@@ -180,59 +192,50 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
     return 200, res_data
 
 
-# TODO: Improve exception handling
-def slash_command_orig(req_body: dict) -> tuple[int,dict]:
-    die_expr_str: str = req_body['data']['options'][0]['value']
-    try:
-        multi_die = MultiDie.parse(die_expr_str)
-        die_type = multi_die.type
-        roll_results = multi_die.roll()
-        total = roll_results.value
-        rolls = roll_results.details
+def askroll_cmd(req_body: dict) -> tuple[int,dict]:
+    user = option_name_to_value(req_body, 'user')
+    die_expr_str = option_name_to_value(req_body, 'dice')
+    roll_desc = option_name_to_value(req_body, 'description')
+    must_beat = option_name_to_value(req_body, 'must_beat')
 
-        if die_type == DieType.D100:
-            emoji_pairs = []
-            for roll in rolls:
-                if roll.value == 100:
-                    emoji_pairs.append((roll.value, EMOJI_ID_BY_CODE["D10_00"], EMOJI_ID_BY_CODE["D10_0"]))
-                else:
-                    tens_val, ones_val = divmod(roll.value, 10)
-                    tens_val *= 10
-
-                    tens_emoji_id = EMOJI_ID_BY_CODE[f"D10_{tens_val}"] if tens_val else EMOJI_ID_BY_CODE["D10_00"]
-                    ones_emoji_id = EMOJI_ID_BY_CODE[f"D10_{ones_val}"]
-
-                    emoji_pairs.append((roll.value, tens_emoji_id, ones_emoji_id))
-
-            if len(emoji_pairs) == 1:
-                ep = emoji_pairs[0]
-                content = f"{ep[1]}{ep[2]}"
-            else:
-                rolls_str = '  '.join([f"{ep[1]}{ep[2]}" for ep in emoji_pairs])
-                content = f"# {total}\n# {rolls_str}"
-            
-        else:
-            emoji_ids = [
-                EMOJI_ID_BY_CODE[f"{r.type.name}_{r.value}"] for r in rolls
-            ]
-
-            if len(emoji_ids) == 1:
-                content = emoji_ids[0]
-            else:
-                rolls_str = ' '.join(emoji_ids)
-                content = f"# {total}\n# {rolls_str}"
-        
-    except DieParseException as dpe:
-        content = f'# ???\n{dpe}'
+    content = f"{user} asks you roll **{die_expr_str}**."
+    if roll_desc:
+        content += f"  {roll_desc}"
+    if must_beat:
+        content += f"  Must beat **{must_beat}**."
 
     res_data = {
-        'type':4,
+        'type': 4,
         'data': {
-            'content': content
+            'content': content,
+            'components': [
+                {
+                    'type': 2,
+                    'label': 'Roll!',
+                    'style': 1,
+                    'custom_id': 'roll_click'
+                }
+            ]
         }
     }
 
     return 200, res_data
+
+
+def slash_command(req_body: dict) -> tuple[int,dict]:
+    cmd_name = req_body['name']
+
+    return cmd_name_dispatch[cmd_name](req_body)
+
+
+def ping(req_body: dict) -> tuple[int,dict]:
+    return 200, {'type':1}
+
+
+cmd_name_dispatch={
+    'roll':roll_cmd,
+    'askroll':askroll_cmd
+}
 
 interaction_type_dispatch={
     1:ping,
