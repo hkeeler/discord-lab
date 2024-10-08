@@ -223,7 +223,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
 
 
 def slash_command(req_body: dict) -> tuple[int,dict]:
-    cmd_name = req_body['name']
+    cmd_name = req_body['data']['name']
 
     return cmd_name_dispatch[cmd_name](req_body)
 
