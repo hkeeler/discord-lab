@@ -210,10 +210,15 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
             'content': content,
             'components': [
                 {
-                    'type': 2,
-                    'label': 'Roll!',
-                    'style': 1,
-                    'custom_id': 'roll_click'
+                    'type': 1,
+                    'components': [
+                        {
+                            'type': 2,
+                            'label': 'Roll!',
+                            'style': 1,
+                            'custom_id': 'roll_click'
+                        }
+                    ]
                 }
             ]
         }
