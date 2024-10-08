@@ -196,7 +196,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     user = option_name_to_value(req_body, 'user')
     die_expr_str = option_name_to_value(req_body, 'dice')
     roll_desc = option_name_to_value(req_body, 'description', False)
-    must_beat = option_name_to_value(req_body, 'must_beat', False)
+    must_beat = option_name_to_value(req_body, 'must-beat', False)
 
     content = f"<@{user}> asks you roll **{die_expr_str}**."
     if roll_desc:
