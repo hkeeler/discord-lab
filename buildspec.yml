@@ -1,5 +1,5 @@
 version: 0.2
-environment:
+env:
   secrets-manager:
     BOT_AUTH_TOKEN: discord/apps/rollem/bot-jwt
 phases:
