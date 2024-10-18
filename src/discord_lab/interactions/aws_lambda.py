@@ -1,10 +1,15 @@
 import json
+import os
 from typing import Any
 
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
+import requests
+
 from discord_lab.dice import *
+
+BOT_AUTH_TOKEN=os.env['BOT_AUTH_TOKEN']
 
 DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 DEV_MODE = False
@@ -132,8 +137,6 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
                 single_roll_details = single_result.rolls.details
                 if len(single_roll_details) == 1:
                     return render_single_die_roll(single_roll_details[0])
-                
-        
 
     rr_mds = []
 
@@ -233,6 +236,61 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
     return cmd_name_dispatch[cmd_name](req_body)
 
 
+def roll_click(req_body: dict) -> tuple[int,dict]:
+    app_id = req_body['message']['application_id']
+    message_id = req_body['message']['id']
+    
+    message_url = f'/webhooks/{app_id}/{message_id}/messages/@original'
+
+    headers = {
+        "Authorization": f"Bot {BOT_AUTH_TOKEN}"
+    }
+
+    orig_msg_resp = requests.get(message_url, headers=headers)
+    orig_msg_resp.raise_for_status()
+    orig_msg = orig_msg_resp.json()
+
+    print(orig_msg)
+
+    option_list = orig_msg['data']['options']
+    options: dict[str,str] = {o['name']:o['value'] for o in option_list}
+
+    # Required options
+    user_id = options['user']
+    die_expr_str = options['dice']
+
+    # Optional options
+    roll_desc = options.get('description', None)
+    must_beat = options.get('must-beat', None)
+
+    # TODO: The rest is copypasta from the 
+    try:
+        die_expr_roll = DieExpr.parse(die_expr_str).roll()
+        content = render_expr_roll(die_expr_str, die_expr_roll)
+    except DieParseException as dpe:
+        content = f'# ???\n{dpe}'
+
+    res_data = {
+        'type':4,
+        'data': {
+            'content': content
+        }
+    }
+
+    return 200, res_data
+
+
+# FIXME: Make this flexible enough to accomidate other commands/components
+def message_component(req_body: dict) -> tuple[int,dict]:
+    cmd_name = req_body['message']['interaction']['metadata']['name']
+    comp_id = req_body['message']['components'][0]['components'][0]['custom_id']
+
+    if cmd_name == 'askroll' and comp_id == 'roll_click':
+        return roll_click(req_body)
+    else:
+        raise ValueError(f"Component `{comp_id}` not implemented for command `{cmd_name}`")
+
+    
 def ping(req_body: dict) -> tuple[int,dict]:
     return 200, {'type':1}
 
@@ -244,7 +302,8 @@ cmd_name_dispatch={
 
 interaction_type_dispatch={
     1:ping,
-    2:slash_command
+    2:slash_command,
+    3:message_component,
 }
 
 
