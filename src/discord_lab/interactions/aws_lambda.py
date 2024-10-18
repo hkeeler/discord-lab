@@ -9,7 +9,7 @@ import requests
 
 from discord_lab.dice import *
 
-BOT_AUTH_TOKEN=os.env['BOT_AUTH_TOKEN']
+BOT_AUTH_TOKEN=os.environ['BOT_AUTH_TOKEN']
 
 DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 DEV_MODE = False
