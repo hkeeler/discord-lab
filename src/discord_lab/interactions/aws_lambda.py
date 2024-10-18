@@ -197,6 +197,7 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
 
 
 def askroll_cmd(req_body: dict) -> tuple[int,dict]:
+    # FIXME: Needs a from_user and to_user
     user = option_name_to_value(req_body, 'user')
     die_expr_str = option_name_to_value(req_body, 'dice')
     roll_desc = option_name_to_value(req_body, 'description', False)
@@ -239,9 +240,9 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
 def roll_click(req_body: dict) -> tuple[int,dict]:
     app_id = req_body['message']['application_id']
-    message_id = req_body['message']['id']
+    interaction_id = req_body['message']['interaction']['id']
     
-    message_url = f'{DISCORD_API_URL_BASE}/webhooks/{app_id}/{message_id}/messages/@original'
+    message_url = f'{DISCORD_API_URL_BASE}/webhooks/{app_id}/{interaction_id}/messages/@original'
 
     headers = {
         "Authorization": f"Bot {BOT_AUTH_TOKEN}"
