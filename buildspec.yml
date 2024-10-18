@@ -1,4 +1,7 @@
 version: 0.2
+environment:
+  secrets-manager:
+    BOT_AUTH_TOKEN: discord/apps/rollem/bot-jwt
 phases:
   pre_build:
     commands:
@@ -14,3 +17,4 @@ phases:
       - docker build -t $IMAGE_NAME .
       - docker push $IMAGE_NAME
       - aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
+      - aws lambda update-function-configuration --function-name discord-lab --environment Variables={BOT_AUTH_TOKEN=$BOT_AUTH_TOKEN}
