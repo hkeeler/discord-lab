@@ -11,6 +11,7 @@ from discord_lab.dice import *
 
 BOT_AUTH_TOKEN=os.environ['BOT_AUTH_TOKEN']
 
+DISCORD_API_URL_BASE='https://discord.com/api/v10'
 DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 DEV_MODE = False
 
@@ -240,7 +241,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     app_id = req_body['message']['application_id']
     message_id = req_body['message']['id']
     
-    message_url = f'/webhooks/{app_id}/{message_id}/messages/@original'
+    message_url = f'{DISCORD_API_URL_BASE}/webhooks/{app_id}/{message_id}/messages/@original'
 
     headers = {
         "Authorization": f"Bot {BOT_AUTH_TOKEN}"
