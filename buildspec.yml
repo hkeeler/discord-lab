@@ -16,5 +16,5 @@ phases:
     commands:
       - docker build -t $IMAGE_NAME .
       - docker push $IMAGE_NAME
-      - aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
       - aws lambda update-function-configuration --function-name discord-lab --environment Variables={BOT_AUTH_TOKEN=$BOT_AUTH_TOKEN}
+      - aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
