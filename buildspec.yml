@@ -1,7 +1,10 @@
 version: 0.2
 env:
   secrets-manager:
-    BOT_AUTH_TOKEN: discord/apps/rollem/bot-jwt
+    DISCORD_APP_ID: discord/apps/rollem:app_id
+    DISCORD_APP_PUBLIC_KEY: discord/apps/rollem:public_key
+    DISCORD_APP_BOT_AUTH_TOKEN: discord/apps/rollem:bot_auth_token
+    DISCORD_OAUTH2_CLIENT_SECRET: discord/apps/rollem:oauth_2_client_secret
 phases:
   pre_build:
     commands:
@@ -16,7 +19,7 @@ phases:
     commands:
       - docker build -t $IMAGE_NAME .
       - docker push $IMAGE_NAME
-      - aws lambda update-function-configuration --function-name discord-lab --environment Variables={BOT_AUTH_TOKEN=$BOT_AUTH_TOKEN}
+      - aws lambda update-function-configuration --function-name discord-lab --environment Variables={DISCORD_APP_ID=$DISCORD_APP_ID,DISCORD_APP_PUBLIC_KEY=$DISCORD_APP_PUBLIC_KEY,DISCORD_APP_BOT_AUTH_TOKEN=$DISCORD_APP_BOT_AUTH_TOKEN,DISCORD_OAUTH2_CLIENT_SECRET=$DISCORD_OAUTH2_CLIENT_SECRET}
       - aws lambda wait function-updated-v2 --function-name discord-lab
       - aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
       - aws lambda wait function-updated-v2 --function-name discord-lab
