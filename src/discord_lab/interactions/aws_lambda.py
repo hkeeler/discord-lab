@@ -212,17 +212,17 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     roll_desc = option_name_to_value(req_body, 'description', False)
     must_beat = option_name_to_value(req_body, 'must-beat', False)
 
-    from_user_id = req_body['member']['user']['id']
+    #from_user_id = req_body['member']['user']['id']
 
-    content = f"<@{from_user_id}> asks <@{to_user_id}> to roll **{die_expr_str}**."
-    if roll_desc:
-        content += f"  {roll_desc}"
-    if must_beat:
-        content += f"  Must beat **{must_beat}**."
+    #content = f"<@{from_user_id}> asks <@{to_user_id}> to roll **{die_expr_str}**."
+    #if roll_desc:
+    #    content += f"  {roll_desc}"
+    #if must_beat:
+    #    content += f"  Must beat **{must_beat}**."
 
     fields = [
-        { "name": "From", "value": f"<@{from_user_id}>", "inline": True},
-        { "name": "To", "value": f"<@{to_user_id}>", "inline": True},
+        #{ "name": "From", "value": f"<@{from_user_id}>", "inline": True},
+        { "name": "Roller", "value": f"<@{to_user_id}>", "inline": True},
         { "name": "Dice", "value": die_expr_str, "inline": True},
     ]
 
@@ -272,7 +272,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds = req_body['message']['embeds']
     req_embed_fields = embeds[0]['fields']
 
-    res_embed_title = 'Roll results'
+    #res_embed_title = 'Roll results'
     res_embed_color = 16777215 # White (Default)
 
     # Required options
@@ -287,10 +287,10 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
-                res_embed_title = 'Success!'
+                #res_embed_title = 'Success!'
                 res_embed_color = 5763719 # Green
             else:
-                res_embed_title = 'Fail!'
+                #res_embed_title = 'Fail!'
                 res_embed_color = 15548997 # Red
 
     except DieParseException as dpe:
