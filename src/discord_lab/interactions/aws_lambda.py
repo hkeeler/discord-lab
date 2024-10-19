@@ -121,7 +121,7 @@ def render_multidie_roll(rolls: MultiDieRoll, include_total: bool) -> str:
 
 
 
-def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
+def render_expr_roll(die_expr_str: str, rolls: DieExprRoll, include_total: bool) -> str:
     roll_results = rolls.results
 
     # If only a single die is rolled, just show that roll without the math bits
@@ -155,7 +155,10 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll) -> str:
 
         rr_mds.append(rr_md)
 
-    md = " ".join(rr_mds) + f"\n# {rolls.value}"   
+    md = " ".join(rr_mds)
+
+    if include_total:
+         md += f"\n# {rolls.value}"
 
     return md
 
@@ -189,7 +192,7 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
     die_expr_str = option_name_to_value(req_body, 'dice')
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        content = render_expr_roll(die_expr_str, die_expr_roll)
+        content = render_expr_roll(die_expr_str, die_expr_roll, True)
     except DieParseException as dpe:
         content = f'# ???\n{dpe}'
 
@@ -237,7 +240,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
         'data': {
             'embeds': [
                 {
-                    "title": "Roll request",
+                    "title": "Roll requested...",
                     "color": 16777215,
                     "fields": fields,
                 }
@@ -280,7 +283,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        result_md = render_expr_roll(die_expr_str, die_expr_roll)
+        result_md = render_expr_roll(die_expr_str, die_expr_roll, False)
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
@@ -293,6 +296,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     embeds[0]['fields'][-1]['value'] = result_md
     components[0]['components'][0]['disabled'] = True
+    components[0]['components'][0]['label'] = die_expr_roll.value
 
     res_data = {
         'type':7,
