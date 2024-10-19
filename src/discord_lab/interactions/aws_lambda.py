@@ -194,7 +194,7 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
         content = f'# ???\n{dpe}'
 
     res_data = {
-        'type':4,
+        'type':7, #4
         'data': {
             'content': content
         }
