@@ -235,11 +235,9 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     res_data = {
         'type': 4,
         'data': {
-            #'content': content,
             'embeds': [
                 {
                     "title": "Roll request",
-                    "description": content,
                     "color": 16777215,
                     "fields": fields,
                 }
@@ -282,23 +280,25 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        content = render_expr_roll(die_expr_str, die_expr_roll)
+        result_md = render_expr_roll(die_expr_str, die_expr_roll)
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
-                content += ':+1:'
+                result_md += ' :+1:'
             else:
-                content += ':-1:'
+                result_md += ' :-1:'
 
     except DieParseException as dpe:
-        content = f'# ???\n{dpe}'
+        result_md = str(dpe)
+
+    embeds[0]['fields'][-1]['value'] = result_md
+    components[0]['components'][0]['disabled'] = True
 
     res_data = {
         'type':7,
         'data': {
             'embeds': embeds,
-            'components': [],
-            'content': content
+            'components': components,
         }
     }
 
