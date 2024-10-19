@@ -194,7 +194,7 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
         content = f'# ???\n{dpe}'
 
     res_data = {
-        'type':7, #4
+        'type':4,
         'data': {
             'content': content
         }
@@ -218,20 +218,28 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if must_beat:
         content += f"  Must beat **{must_beat}**."
 
+    fields = [
+        { "name": "From", "value": f"<@{from_user_id}>", "inline": True},
+        { "name": "To", "value": f"<@{to_user_id}>", "inline": True},
+        { "name": "Dice", "value": die_expr_str, "inline": True},
+    ]
+
+    if must_beat:
+        fields.append({"name": "Must Beat", "value": must_beat, "inline": True})
+
+    if roll_desc:
+        fields.append({"name": "Description", "value": roll_desc, "inline": False})
+
     res_data = {
         'type': 4,
         'data': {
-            'content': content,
+            #'content': content,
             'embeds': [
                 {
-                    #"title": f"Roll {die_expr_str}",
-                    #"description": content,
+                    "title": "Roll request",
+                    "description": content,
                     "color": 16777215,
-                    "fields": [
-                        { "name": "From", "value": f"<@{from_user_id}>", "inline": "true"},
-                        { "name": "To", "value": f"<@{to_user_id}>", "inline": "true"},
-                        { "name": "Dice", "value": die_expr_str, "inline": "true"},
-                    ]
+                    "fields": fields,
                 }
             ],
             'components': [
@@ -279,7 +287,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         content = f'# ???\n{dpe}'
 
     res_data = {
-        'type':4,
+        'type':7,
         'data': {
             'content': content
         }
