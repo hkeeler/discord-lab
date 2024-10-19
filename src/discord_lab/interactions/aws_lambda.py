@@ -207,7 +207,6 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
 
 
 def askroll_cmd(req_body: dict) -> tuple[int,dict]:
-    # FIXME: Needs a from_user and to_user
     to_user_id = option_name_to_value(req_body, 'user')
     die_expr_str = option_name_to_value(req_body, 'dice')
     roll_desc = option_name_to_value(req_body, 'description', False)
@@ -230,17 +229,16 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if must_beat:
         fields.append({"name": "Must Beat", "value": must_beat, "inline": True})
 
-    if roll_desc:
-        fields.append({"name": "Description", "value": roll_desc, "inline": False})
-
-    #fields.append({"name": "Results", "value": "???", "inline": False})
+    #if roll_desc:
+    #    fields.append({"name": "Description", "value": roll_desc, "inline": False})
 
     res_data = {
         'type': 4,
         'data': {
             'embeds': [
                 {
-                    "title": "Roll request!",
+                    #"title": "Roll request!",
+                    "description": roll_desc,
                     "color": 16777215,
                     "fields": fields,
                 }
@@ -298,14 +296,9 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     except DieParseException as dpe:
         result_md = str(dpe)
 
-    # Previous update-embed model
-    # embeds[0]['fields'][-1]['value'] = result_md
-    #components[0]['components'][0]['disabled'] = True
-    #components[0]['components'][0]['label'] = die_expr_roll.value
-
     embeds.append(
         {
-            "title": res_embed_title,
+            #"title": res_embed_title,
             "color": res_embed_color,
             "fields": [
                 { "name": "Result", "value": die_expr_roll.value, "inline": True},
