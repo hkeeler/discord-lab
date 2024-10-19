@@ -1,5 +1,4 @@
 import json
-import os
 from typing import Any
 
 from nacl.signing import VerifyKey
@@ -8,11 +7,8 @@ from nacl.exceptions import BadSignatureError
 import requests
 
 from discord_lab.dice import *
+from discord_lab.interactions.env import *
 
-BOT_AUTH_TOKEN=os.environ['BOT_AUTH_TOKEN']
-
-DISCORD_API_URL_BASE='https://discord.com/api/v10'
-DISCORD_PUBLIC_KEY='460f2fecfe0cbcea5df36ae25dfb0c974ad567ccf3e6f76d52323faad3a0b7a0'
 DEV_MODE = False
 
 EMOJI_ID_BY_CODE = {
@@ -212,7 +208,24 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     res_data = {
         'type': 4,
         'data': {
-            'content': content,
+#            'content': content,
+            'embeds': [
+                {
+                    "title": content,
+                    "description": "Description goes here",
+                    "footer": {
+                        "text": "Any use for a footer?"
+                    },
+                    #"color": 16777215,
+                    #"thumbnail": {
+                    #    "url": "https://www.thearcanelibrary.com/cdn/shop/articles/Torchie_1600x.png"
+                    #},
+                    "fields": [
+                        { "name": "Roller", "value": user},
+                        { "name": "Dice", "value": die_expr_str, "inline": "true"},
+                    ]
+                }
+            ],
             'components': [
                 {
                     'type': 1,
@@ -245,7 +258,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     message_url = f'{DISCORD_API_URL_BASE}/webhooks/{app_id}/{interaction_id}/messages/@original'
 
     headers = {
-        "Authorization": f"Bot {BOT_AUTH_TOKEN}"
+        "Authorization": f"Bot {DISCORD_APP_BOT_AUTH_TOKEN}"
     }
 
     orig_msg_resp = requests.get(message_url, headers=headers)
@@ -322,7 +335,7 @@ def handler(event, context):
             signature = headers["x-signature-ed25519"]
             timestamp = headers["x-signature-timestamp"]
 
-            verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
+            verify_key = VerifyKey(bytes.fromhex(DISCORD_APP_PUBLIC_KEY))
             verify_key.verify(f'{timestamp}{req_body_str}'.encode(), bytes.fromhex(signature))
         except BadSignatureError:
             print('WARN: Request failed signature verification')
