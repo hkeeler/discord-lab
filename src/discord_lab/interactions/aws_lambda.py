@@ -174,6 +174,17 @@ def option_name_to_value(req_body: dict, option_name: str, required: bool = True
         return None
 
 
+def embed_field_to_value(embeds: list[dict], field_name, required: bool = True) -> Any:
+    for embed in embeds:
+        if embed['name'] == field_name:
+            return embed['value']            
+        
+    if required:
+        raise ValueError(f"Required embed field not present: {field_name}")
+    else:
+        return None
+
+
 def roll_cmd(req_body: dict) -> tuple[int,dict]:
     die_expr_str = option_name_to_value(req_body, 'dice')
     try:
@@ -211,12 +222,12 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
 #            'content': content,
             'embeds': [
                 {
-                    "title": content,
-                    "description": "Description goes here",
+                    "title": f"Roll {die_expr_str}",
+                    "description": content,
                     "footer": {
                         "text": "Any use for a footer?"
                     },
-                    #"color": 16777215,
+                    "color": 16777215,
                     #"thumbnail": {
                     #    "url": "https://www.thearcanelibrary.com/cdn/shop/articles/Torchie_1600x.png"
                     #},
@@ -252,31 +263,15 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
 
 def roll_click(req_body: dict) -> tuple[int,dict]:
-    app_id = req_body['message']['application_id']
-    interaction_id = req_body['message']['interaction']['id']
-    
-    message_url = f'{DISCORD_API_URL_BASE}/webhooks/{app_id}/{interaction_id}/messages/@original'
-
-    headers = {
-        "Authorization": f"Bot {DISCORD_APP_BOT_AUTH_TOKEN}"
-    }
-
-    orig_msg_resp = requests.get(message_url, headers=headers)
-    orig_msg_resp.raise_for_status()
-    orig_msg = orig_msg_resp.json()
-
-    print(orig_msg)
-
-    option_list = orig_msg['data']['options']
-    options: dict[str,str] = {o['name']:o['value'] for o in option_list}
+    fields = req_body['message']['embeds'][0]['fields']
 
     # Required options
-    user_id = options['user']
-    die_expr_str = options['dice']
+    user_id = embed_field_to_value(fields, 'Roller')
+    die_expr_str = embed_field_to_value(fields, 'Dice')
 
     # Optional options
-    roll_desc = options.get('description', None)
-    must_beat = options.get('must-beat', None)
+    #roll_desc = options.get('description', None)
+    #must_beat = options.get('must-beat', None)
 
     # TODO: The rest is copypasta from the 
     try:
