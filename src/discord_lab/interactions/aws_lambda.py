@@ -142,8 +142,8 @@ def render_expr_roll(die_expr_str: str, rolls: DieExprRoll, include_total: bool)
             case IntTermOperationResult():
                 rr_md = str(rr.value)
             case MultiDieTermOperationResult():
-                include_total = len(roll_results) > 1
-                rr_md = render_multidie_roll(rr.rolls, include_total)
+                include_subtotals = len(roll_results) > 1
+                rr_md = render_multidie_roll(rr.rolls, include_subtotals)
 
         op_symbol = rr.term_op.operation.value
         if op_symbol:
@@ -233,14 +233,14 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if roll_desc:
         fields.append({"name": "Description", "value": roll_desc, "inline": False})
 
-    fields.append({"name": "Results", "value": "???", "inline": False})
+    #fields.append({"name": "Results", "value": "???", "inline": False})
 
     res_data = {
         'type': 4,
         'data': {
             'embeds': [
                 {
-                    "title": "Roll requested...",
+                    "title": "Roll request!",
                     "color": 16777215,
                     "fields": fields,
                 }
@@ -272,14 +272,16 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
 def roll_click(req_body: dict) -> tuple[int,dict]:
     components = req_body['message']['components']
-    embeds = req_body['message']['embeds']
-    embed_fields = embeds[0]['fields']
+    req_embeds = req_body['message']['embeds']
+    req_embed_fields = req_embeds[0]['fields']
+
+    res_embed_color = 16777215 # White (Default)
 
     # Required options
-    die_expr_str = embed_field_to_value(embed_fields, 'Dice')
+    die_expr_str = embed_field_to_value(req_embed_fields, 'Dice')
 
     # Optional options
-    must_beat = embed_field_to_value(embed_fields, 'Must Beat', False)
+    must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
@@ -287,22 +289,33 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
-                result_md += ' :+1:'
+                res_embed_color = 5763719 # Green
             else:
-                result_md += ' :-1:'
+                res_embed_color = 15548997 # Red
 
     except DieParseException as dpe:
         result_md = str(dpe)
 
-    embeds[0]['fields'][-1]['value'] = result_md
-    components[0]['components'][0]['disabled'] = True
-    components[0]['components'][0]['label'] = die_expr_roll.value
+    # Previous update-embed model
+    # embeds[0]['fields'][-1]['value'] = result_md
+    #components[0]['components'][0]['disabled'] = True
+    #components[0]['components'][0]['label'] = die_expr_roll.value
+
+    res_embed = {
+        "title": "Roll result",
+        "color": res_embed_color,
+        "fields": [
+            { "name": "Result", "value": die_expr_roll.value, "inline": True},
+            { "name": "Details", "value": result_md, "inline": True},
+        ],
+    }
+
 
     res_data = {
         'type':7,
         'data': {
-            'embeds': embeds,
-            'components': components,
+            'embeds': req_embeds,
+            'components': [],
         }
     }
 
