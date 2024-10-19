@@ -205,12 +205,14 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
 
 def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     # FIXME: Needs a from_user and to_user
-    user = option_name_to_value(req_body, 'user')
+    to_user_id = option_name_to_value(req_body, 'user')
     die_expr_str = option_name_to_value(req_body, 'dice')
     roll_desc = option_name_to_value(req_body, 'description', False)
     must_beat = option_name_to_value(req_body, 'must-beat', False)
 
-    content = f"<@{user}> asks you roll **{die_expr_str}**."
+    from_user_id = req_body['member']['user']['id']
+
+    content = f"<@{from_user_id}> asks <@{to_user_id}> to roll **{die_expr_str}**."
     if roll_desc:
         content += f"  {roll_desc}"
     if must_beat:
@@ -219,20 +221,15 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     res_data = {
         'type': 4,
         'data': {
-#            'content': content,
+            'content': content,
             'embeds': [
                 {
-                    "title": f"Roll {die_expr_str}",
-                    "description": content,
-                    "footer": {
-                        "text": "Any use for a footer?"
-                    },
+                    #"title": f"Roll {die_expr_str}",
+                    #"description": content,
                     "color": 16777215,
-                    #"thumbnail": {
-                    #    "url": "https://www.thearcanelibrary.com/cdn/shop/articles/Torchie_1600x.png"
-                    #},
                     "fields": [
-                        { "name": "Roller", "value": user},
+                        { "name": "From", "value": f"<@{from_user_id}>", "inline": "true"},
+                        { "name": "To", "value": f"<@{to_user_id}>", "inline": "true"},
                         { "name": "Dice", "value": die_expr_str, "inline": "true"},
                     ]
                 }
@@ -266,7 +263,8 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     fields = req_body['message']['embeds'][0]['fields']
 
     # Required options
-    user_id = embed_field_to_value(fields, 'Roller')
+    from_user_id = embed_field_to_value(fields, 'From')
+    to_user_id = embed_field_to_value(fields, 'To')
     die_expr_str = embed_field_to_value(fields, 'Dice')
 
     # Optional options
