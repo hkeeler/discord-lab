@@ -230,6 +230,8 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if roll_desc:
         fields.append({"name": "Description", "value": roll_desc, "inline": False})
 
+    fields.append({"name": "Results", "value": "???", "inline": False})
+
     res_data = {
         'type': 4,
         'data': {
@@ -268,27 +270,34 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
 
 def roll_click(req_body: dict) -> tuple[int,dict]:
-    fields = req_body['message']['embeds'][0]['fields']
+    components = req_body['message']['components']
+    embeds = req_body['message']['embeds']
+    embed_fields = embeds[0]['fields']
 
     # Required options
-    from_user_id = embed_field_to_value(fields, 'From')
-    to_user_id = embed_field_to_value(fields, 'To')
-    die_expr_str = embed_field_to_value(fields, 'Dice')
+    die_expr_str = embed_field_to_value(embed_fields, 'Dice')
 
     # Optional options
-    #roll_desc = options.get('description', None)
-    #must_beat = options.get('must-beat', None)
+    must_beat = embed_field_to_value(embed_fields, 'Must Beat', False)
 
-    # TODO: The rest is copypasta from the 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
         content = render_expr_roll(die_expr_str, die_expr_roll)
+
+        if must_beat:
+            if die_expr_roll.value > int(must_beat):
+                content += ':+1:'
+            else:
+                content += ':-1:'
+
     except DieParseException as dpe:
         content = f'# ???\n{dpe}'
 
     res_data = {
         'type':7,
         'data': {
+            'embeds': embeds,
+            'components': [],
             'content': content
         }
     }
