@@ -3,7 +3,7 @@
 from pprint import pprint
 import requests as r
 
-from discord_lab.character import Gear, Weapon, gen_0_level_char, stat_mod
+from discord_lab.shadowdark.character import Gear, Weapon, gen_0_level_char, stat_mod
 
 ascii_card_slim = """
 ┌──────────────────────────────────────────────────────┐
