@@ -235,30 +235,40 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                     'type': 1,
                     'components': [
                         {
-                            'type': 3, # String Select
-                            'custom_id': 'roll_bonus',
-                            "options":[
-                                { "label": "-9", "value": "-9"},
-                                { "label": "-8", "value": "-8"},
-                                { "label": "-7", "value": "-7"},
-                                { "label": "-6", "value": "-6"},
-                                { "label": "-5", "value": "-5"},
-                                { "label": "-4", "value": "-4"},
-                                { "label": "-3", "value": "-3"},
-                                { "label": "-2", "value": "-2"},
-                                { "label": "-1", "value": "-1"},
-                                { "label": " 0", "value": "0", "default": True},
-                                { "label": "+1", "value": "1"},
-                                { "label": "+2", "value": "2"},
-                                { "label": "+3", "value": "3"},
-                                { "label": "+4", "value": "4"},
-                                { "label": "+5", "value": "5"},
-                                { "label": "+6", "value": "6"},
-                                { "label": "+7", "value": "7"},
-                                { "label": "+8", "value": "8"},
-                                { "label": "+9", "value": "9"},
-                            ],
-                        }
+                            "type": 4,
+                            "custom_id": "bonus",
+                            "label": "Bonus (ex: +2 (Dex))",
+                            "style": 1,
+                            "min_length": 1,
+                            "max_length": 25,
+                            "value": "0",
+                            "required": True
+                        },
+                        #{
+                        #    'type': 3, # String Select
+                        #    'custom_id': 'roll_bonus',
+                        #    "options":[
+                        #        { "label": "-9", "value": "-9"},
+                        #        { "label": "-8", "value": "-8"},
+                        #        { "label": "-7", "value": "-7"},
+                        #        { "label": "-6", "value": "-6"},
+                        #        { "label": "-5", "value": "-5"},
+                        #        { "label": "-4", "value": "-4"},
+                        #        { "label": "-3", "value": "-3"},
+                        #        { "label": "-2", "value": "-2"},
+                        #        { "label": "-1", "value": "-1"},
+                        #        { "label": " 0", "value": "0", "default": True},
+                        #        { "label": "+1", "value": "1"},
+                        #        { "label": "+2", "value": "2"},
+                        #        { "label": "+3", "value": "3"},
+                        #        { "label": "+4", "value": "4"},
+                        #        { "label": "+5", "value": "5"},
+                        #        { "label": "+6", "value": "6"},
+                        #        { "label": "+7", "value": "7"},
+                        #        { "label": "+8", "value": "8"},
+                        #        { "label": "+9", "value": "9"},
+                        #    ],
+                        #}
                     ]
                 },
                 {
