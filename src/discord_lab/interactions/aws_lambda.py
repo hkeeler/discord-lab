@@ -243,7 +243,6 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                         {
                             'type': 3, # String Select
                             'label': 'Bonus',
-                            'style': 1, # Primary
                             'custom_id': 'roll_bonus',
                             'default_values': ['0'],
                             "options":[
