@@ -242,9 +242,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                         },
                         {
                             'type': 3, # String Select
-                            'label': 'Bonus',
                             'custom_id': 'roll_bonus',
-                            #'default_values': ['0'],
                             "options":[
                                 { "label": "-9", "value": "-9"},
                                 { "label": "-8", "value": "-8"},
@@ -255,7 +253,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                                 { "label": "-3", "value": "-3"},
                                 { "label": "-2", "value": "-2"},
                                 { "label": "-1", "value": "-1"},
-                                { "label": " 0", "value": "0"},
+                                { "label": " 0", "value": "0", "default": True},
                                 { "label": "+1", "value": "1"},
                                 { "label": "+2", "value": "2"},
                                 { "label": "+3", "value": "3"},
