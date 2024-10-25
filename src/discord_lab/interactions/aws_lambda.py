@@ -235,12 +235,6 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                     'type': 1,
                     'components': [
                         {
-                            'type': 2, # Button
-                            'label': 'Roll!',
-                            'style': 1, # Primary
-                            'custom_id': 'roll_click'
-                        },
-                        {
                             'type': 3, # String Select
                             'custom_id': 'roll_bonus',
                             "options":[
@@ -266,7 +260,19 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             ],
                         }
                     ]
+                },
+                {
+                    'type': 1,
+                    'components': [
+                        {
+                            'type': 2, # Button
+                            'label': 'Roll!',
+                            'style': 1, # Primary
+                            'custom_id': 'roll_click'
+                        },
+                    ]
                 }
+
             ]
         }
     }
