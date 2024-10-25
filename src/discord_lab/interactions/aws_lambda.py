@@ -235,10 +235,38 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                     'type': 1,
                     'components': [
                         {
-                            'type': 2,
+                            'type': 2, # Button
                             'label': 'Roll!',
-                            'style': 1,
+                            'style': 1, # Primary
                             'custom_id': 'roll_click'
+                        },
+                        {
+                            'type': 3, # String Select
+                            'label': 'Bonus',
+                            'style': 1, # Primary
+                            'custom_id': 'roll_bonus',
+                            'default_values': ['0'],
+                            "options":[
+                                { "label": "-9", "value": "-9"},
+                                { "label": "-8", "value": "-8"},
+                                { "label": "-7", "value": "-7"},
+                                { "label": "-6", "value": "-6"},
+                                { "label": "-5", "value": "-5"},
+                                { "label": "-4", "value": "-4"},
+                                { "label": "-3", "value": "-3"},
+                                { "label": "-2", "value": "-2"},
+                                { "label": "-1", "value": "-1"},
+                                { "label": " 0", "value": "0"},
+                                { "label": "+1", "value": "1"},
+                                { "label": "+2", "value": "2"},
+                                { "label": "+3", "value": "3"},
+                                { "label": "+4", "value": "4"},
+                                { "label": "+5", "value": "5"},
+                                { "label": "+6", "value": "6"},
+                                { "label": "+7", "value": "7"},
+                                { "label": "+8", "value": "8"},
+                                { "label": "+9", "value": "9"},
+                            ],                            
                         }
                     ]
                 }
