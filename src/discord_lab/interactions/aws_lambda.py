@@ -275,7 +275,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             'type':4,
             'data': {
                 'content': "Not yer roll, bruh!",
-                'flags': 6 # Ephemeral
+                'flags': 64 # Ephemeral
             }
         }
 
