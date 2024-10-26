@@ -259,13 +259,27 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds = req_body['message']['embeds']
     req_embed_fields = embeds[0]['fields']
 
+    button_clicker_user_id = req_body['member']['user']['id']
+
     res_embed_color = embeds[0]['color']
 
     # Required options
     die_expr_str = embed_field_to_value(req_embed_fields, 'Dice')
+    requested_roller_user_id = embed_field_to_value(req_embed_fields, 'Roller')
 
     # Optional options
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
+
+    if button_clicker_user_id != requested_roller_user_id:
+        res_data = {
+            'type':4,
+            'data': {
+                'content': "Not yer roll, bruh!",
+                'flags': 6 # Ephemeral
+            }
+        }
+
+        return 200, res_data
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
