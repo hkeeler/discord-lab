@@ -271,6 +271,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
 
     if button_clicker_user_id != requested_roller_user_id:
+        print(f"button_clicker_user_id={button_clicker_user_id}, requested_roller_user_id={requested_roller_user_id}")
         res_data = {
             'type':4,
             'data': {
