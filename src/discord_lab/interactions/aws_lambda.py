@@ -285,7 +285,8 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        result_md = render_expr_roll(die_expr_str, die_expr_roll, False)
+        result_md = render_expr_roll(die_expr_str, die_expr_roll, True)
+        result_md_no_total = render_expr_roll(die_expr_str, die_expr_roll, False)
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
@@ -294,15 +295,16 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
                 res_embed_color = 15548997 # Red
 
     except DieParseException as dpe:
-        result_md = str(dpe)
+        result_md_no_total = str(dpe)
 
     embeds.append(
         {
             "color": res_embed_color,
-            "description": f"# {result_md}\n\n# {die_expr_roll.value}",
+            #"description": f"# {result_md_no_total}\n\n# {die_expr_roll.value}",
+            "description": result_md,
             "fields": [
                 { "name": "Result", "value": die_expr_roll.value, "inline": True},
-                { "name": "Details", "value": result_md, "inline": True},
+                { "name": "Details", "value": result_md_no_total, "inline": True},
             ],
         }
     )
