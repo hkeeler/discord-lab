@@ -300,8 +300,8 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         {
             "color": res_embed_color,
             "fields": [
-                { "name": "Result", "value": die_expr_roll.value, "inline": True},
-                { "name": "Details", "value": result_md, "inline": True},
+                { "name": "Result", "value": f"# {die_expr_roll.value}", "inline": True},
+                { "name": "Details", "value": f"# {result_md}", "inline": True},
             ],
         }
     )
