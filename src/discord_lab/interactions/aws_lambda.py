@@ -299,7 +299,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds.append(
         {
             "color": res_embed_color,
-            "content": f"# {die_expr_roll.value}",
+            "description": f"# {die_expr_roll.value}",
             "fields": [
                 { "name": "Result", "value": die_expr_roll.value, "inline": True},
                 { "name": "Details", "value": result_md, "inline": True},
