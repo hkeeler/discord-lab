@@ -14,6 +14,7 @@ env:
   REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_DEPLOY_NOTIFICATIONS_WEBHOOK }}
 
 
 jobs:
@@ -28,6 +29,11 @@ jobs:
       id-token: write
 
     steps:
+      - name: Notify job start
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Rollem deployment starting...'
+    
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -76,17 +82,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      ## Sign the resulting Docker image digest except on PRs.
-      ## This will only write to the public Rekor transparency log when the Docker
-      ## repository is public to avoid leaking data.  If you would like to publish
-      ## transparency data even for private images, pass --force to cosign below.
-      ## https://github.com/sigstore/cosign
-      #- name: Sign the published Docker image
-      #  if: ${{ github.event_name != 'pull_request' }}
-      #  env:
-      #    # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-      #    TAGS: ${{ steps.meta.outputs.tags }}
-      #    DIGEST: ${{ steps.build-and-push.outputs.digest }}
-      #  # This step uses the identity token to provision an ephemeral certificate
-      #  # against the sigstore community Fulcio instance.
-      #  run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+      - name: Notify job success
+        uses: Ilshidur/action-discord@master
+        if: success()
+        with:
+          args: 'Rollem deployment complete!'
+
+
+      - name: Notify job failure
+        uses: Ilshidur/action-discord@master
+        if: failed()
+        with:
+          args: 'Rollem deployment FAILED!'
