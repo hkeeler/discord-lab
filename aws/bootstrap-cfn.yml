@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS resources required for GitHub Actions integration
+
+Resources:
+
+  GitHubActionsIamUser:
+    Type: AWS::IAM::User
+    Properties:
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
+      UserName: svc-rollem-github-actions
