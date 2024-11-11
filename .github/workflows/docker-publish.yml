@@ -15,6 +15,7 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
   DISCORD_WEBHOOK: ${{ secrets.DISCORD_DEPLOY_NOTIFICATIONS_WEBHOOK }}
+  GIT_SHA_LINK_MD: "[`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})"
 
 
 jobs:
@@ -32,7 +33,7 @@ jobs:
       - name: Notify job start
         uses: Ilshidur/action-discord@master
         with:
-          args: 'Rollem deployment starting...'
+          args: 'Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} starting...'
     
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -86,11 +87,11 @@ jobs:
         uses: Ilshidur/action-discord@master
         if: success()
         with:
-          args: 'Rollem deployment complete!'
+          args: 'Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} complete.'
 
 
       - name: Notify job failure
         uses: Ilshidur/action-discord@master
         if: failure()
         with:
-          args: 'Rollem deployment FAILED!'
+          args: 'Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} FAILED!'
