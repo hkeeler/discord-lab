@@ -91,6 +91,6 @@ jobs:
 
       - name: Notify job failure
         uses: Ilshidur/action-discord@master
-        if: failed()
+        if: failure()
         with:
           args: 'Rollem deployment FAILED!'
