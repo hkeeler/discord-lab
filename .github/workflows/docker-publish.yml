@@ -83,12 +83,30 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Deploy AWS Resources
+        env:
+          DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+          DISCORD_APP_PUBLIC_KEY: ${{ secrets.DISCORD_APP_PUBLIC_KEY }}
+          DISCORD_APP_BOT_AUTH_TOKEN: ${{ secrets.DISCORD_APP_BOT_AUTH_TOKEN }}
+          DISCORD_OAUTH2_CLIENT_SECRET: ${{ secrets.DISCORD_OAUTH2_CLIENT_SECRET }}
+        run: |
+          aws lambda update-function-configuration --function-name discord-lab --environment "Variables={DISCORD_APP_ID=$DISCORD_APP_ID,DISCORD_APP_PUBLIC_KEY=$DISCORD_APP_PUBLIC_KEY,DISCORD_APP_BOT_AUTH_TOKEN=$DISCORD_APP_BOT_AUTH_TOKEN,DISCORD_OAUTH2_CLIENT_SECRET=$DISCORD_OAUTH2_CLIENT_SECRET}"
+          aws lambda wait function-updated-v2 --function-name discord-lab
+          aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
+          aws lambda wait function-updated-v2 --function-name discord-lab
+
       - name: Notify job success
         uses: Ilshidur/action-discord@master
         if: success()
         with:
           args: 'Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} complete.'
-
 
       - name: Notify job failure
         uses: Ilshidur/action-discord@master
