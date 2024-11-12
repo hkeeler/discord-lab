@@ -99,7 +99,7 @@ jobs:
         run: |
           aws lambda update-function-configuration --function-name discord-lab --environment "Variables={DISCORD_APP_ID=$DISCORD_APP_ID,DISCORD_APP_PUBLIC_KEY=$DISCORD_APP_PUBLIC_KEY,DISCORD_APP_BOT_AUTH_TOKEN=$DISCORD_APP_BOT_AUTH_TOKEN,DISCORD_OAUTH2_CLIENT_SECRET=$DISCORD_OAUTH2_CLIENT_SECRET}"
           aws lambda wait function-updated-v2 --function-name discord-lab
-          aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME
+          aws lambda update-function-code --function-name discord-lab --image-uri "${REGISTRY}/${IMAGE_NAME}"
           aws lambda wait function-updated-v2 --function-name discord-lab
 
       - name: Notify job success
