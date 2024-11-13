@@ -96,11 +96,10 @@ jobs:
           DISCORD_APP_PUBLIC_KEY: ${{ secrets.DISCORD_APP_PUBLIC_KEY }}
           DISCORD_APP_BOT_AUTH_TOKEN: ${{ secrets.DISCORD_APP_BOT_AUTH_TOKEN }}
           DISCORD_OAUTH2_CLIENT_SECRET: ${{ secrets.DISCORD_OAUTH2_CLIENT_SECRET }}
-          IMAGE_NAME_FULL: ${{ steps.build-and-push.outputs.metadata.image.name }}
         run: |
           aws lambda update-function-configuration --function-name discord-lab --environment "Variables={DISCORD_APP_ID=$DISCORD_APP_ID,DISCORD_APP_PUBLIC_KEY=$DISCORD_APP_PUBLIC_KEY,DISCORD_APP_BOT_AUTH_TOKEN=$DISCORD_APP_BOT_AUTH_TOKEN,DISCORD_OAUTH2_CLIENT_SECRET=$DISCORD_OAUTH2_CLIENT_SECRET}"
           aws lambda wait function-updated-v2 --function-name discord-lab
-          aws lambda update-function-code --function-name discord-lab --image-uri $IMAGE_NAME_FULL
+          aws lambda update-function-code --function-name discord-lab --image-uri $DOCKER_METADATA_OUTPUT_TAGS
           aws lambda wait function-updated-v2 --function-name discord-lab
 
       - name: Notify job success
