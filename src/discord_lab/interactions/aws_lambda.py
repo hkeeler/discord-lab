@@ -213,7 +213,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     must_beat = option_name_to_value(req_body, 'must-beat', False)
 
     fields = [
-        { "name": "Player", "value": f"<@{to_user_id}>", "inline": True},
+        { "name": "Roller", "value": f"<@{to_user_id}>", "inline": True},
         { "name": "Dice", "value": die_expr_str, "inline": True},
     ]
 
@@ -265,13 +265,13 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     # Required options
     die_expr_str = embed_field_to_value(req_embed_fields, 'Dice')
-    requested_player_user_id = embed_field_to_value(req_embed_fields, 'Player')
+    requested_roller_user_id = embed_field_to_value(req_embed_fields, 'Roller')
 
     # Optional options
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
 
     # NOTE: button_clicker_user_id is an int, which requested_player_user_id is of for form <@{int}>
-    if button_clicker_user_id not in requested_player_user_id:
+    if button_clicker_user_id not in requested_roller_user_id:
         res_data = {
             'type':4,
             'data': {
