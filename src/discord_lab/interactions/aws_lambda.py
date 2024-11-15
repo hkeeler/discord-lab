@@ -223,13 +223,13 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     res_data = {
         'type': 4,
         'data': {
-            'content': f"```json\n{req_body}\n```",
+            'content': f"```json\n{json.dumps(req_body,indent=4)}\n```",
             'embeds': [
-                {
-                    "description": roll_desc,
-                    "color": 9807270, # Grey
-                    "fields": fields,
-                }
+                #{
+                #    "description": roll_desc,
+                #    "color": 9807270, # Grey
+                #    "fields": fields,
+                #}
             ],
             #'components': [
             #    {
