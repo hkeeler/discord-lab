@@ -257,7 +257,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
             'embeds': [
                 {
                     "description": roll_desc,
-                    "color": 9807270, # Grey
+                    #"color": 9807270, # Grey
                     #"fields": fields,
                 }
             ],
