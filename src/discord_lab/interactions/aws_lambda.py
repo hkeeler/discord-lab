@@ -220,47 +220,29 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if must_beat:
         fields.append({"name": "Must Beat", "value": must_beat, "inline": True})
 
-    #res_data = {
-    #    'type': 4,
-    #    'data': {
-    #        'content': f"```json\n{json.dumps(req_body,indent=4)}\n```",
-    #        'embeds': [
-    #            {
-    #                "description": roll_desc,
-    #                "color": 9807270, # Grey
-    #                "fields": fields,
-    #            }
-    #        ],
-    #        'components': [
-    #            {
-    #                'type': 1,
-    #                'components': [
-    #                    {
-    #                        'type': 2, # Button
-    #                        'label': 'Roll!',
-    #                        'style': 1, # Primary
-    #                        'custom_id': 'roll_click'
-    #                    },
-    #                ]
-    #            }
-    #        ]
-    #    }
-    #}
-
-    #content = f"```json\n{json.dumps(req_body,indent=4)}\n```"
-    #fields_json = json.dumps(fields, indent=2)
-    content = f"Roller: <@{to_user_id}>, Dice: {die_expr_str}, must_beat: {must_beat}, roll_desc: {roll_desc}"
     res_data = {
-        'type':4,
+        'type': 4,
         'data': {
-            #'content': content,
             'embeds': [
                 {
                     "description": roll_desc,
-                    #"color": 9807270, # Grey
-                    #"fields": fields,
+                    "color": 9807270, # Grey
+                    "fields": fields,
                 }
             ],
+            'components': [
+                {
+                    'type': 1,
+                    'components': [
+                        {
+                            'type': 2, # Button
+                            'label': 'Roll!',
+                            'style': 1, # Primary
+                            'custom_id': 'roll_click'
+                        },
+                    ]
+                }
+            ]
         }
     }
 
