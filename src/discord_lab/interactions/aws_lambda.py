@@ -247,7 +247,9 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     #    }
     #}
 
-    content = f"```json\n{json.dumps(req_body,indent=4)}\n```"
+    #content = f"```json\n{json.dumps(req_body,indent=4)}\n```"
+    #fields_json = json.dumps(fields, indent=2)
+    content = f"Roller: <@{to_user_id}>, Dice: {die_expr_str}, must_beat: {must_beat}, roll_desc: {roll_desc}"
     res_data = {
         'type':4,
         'data': {
