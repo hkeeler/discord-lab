@@ -223,6 +223,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     res_data = {
         'type': 4,
         'data': {
+            'content': f"```json\n{req_body}\n```",
             'embeds': [
                 {
                     "description": roll_desc,
