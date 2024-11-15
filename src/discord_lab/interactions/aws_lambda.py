@@ -247,7 +247,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     #    }
     #}
 
-    content = 'hi'
+    content = f"```json\n{json.dumps(req_body,indent=4)}\n```"
     res_data = {
         'type':4,
         'data': {
