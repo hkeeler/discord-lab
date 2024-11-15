@@ -33,7 +33,7 @@ jobs:
       - name: Notify job start
         uses: Ilshidur/action-discord@master
         with:
-          args: ':hammer: Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} starting...'
+          args: ':hammer: Deployment for ${{ env.GIT_SHA_LINK_MD }} starting...'
     
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -109,10 +109,10 @@ jobs:
         uses: Ilshidur/action-discord@master
         if: success()
         with:
-          args: ':white_check_mark: Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} complete.'
+          args: ':white_check_mark: Deployment for `${{ github.sha }}` complete.'
 
       - name: Notify job failure
         uses: Ilshidur/action-discord@master
         if: failure()
         with:
-          args: ':x: Rollem deployment for ${{ env.GIT_SHA_LINK_MD }} FAILED!'
+          args: ':x: Deployment for `${{ github.sha }}` FAILED!'
