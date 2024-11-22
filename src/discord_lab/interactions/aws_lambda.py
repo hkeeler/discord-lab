@@ -273,7 +273,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     # NOTE: button_clicker_user_id is an int, which requested_player_user_id is of for form <@{int}>
     if button_clicker_user_id not in requested_roller_user_id:
         res_data = {
-            'type':4,
+            'type': 4,
             'data': {
                 'content': "Not yer roll, bruh!",
                 'flags': 64 # Ephemeral
@@ -307,7 +307,8 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     )
 
     res_data = {
-        'type':7,
+        #'type': 7, # UPDATE_MESSAGE
+        'type': 6, # DEFERRED_UPDATE_MESSAGE
         'data': {
             'embeds': embeds,
             'components': [],
