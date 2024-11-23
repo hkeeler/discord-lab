@@ -258,10 +258,10 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
             "from_user_id": {"N": from_user_id},
             "to_user_id": {"N": to_user_id},
             "die_expr": {"S": die_expr_str },
-            "roll_desc": {"S": roll_desc },
-            "must_beat": {"N": must_beat },
-            "success_message": {"S": success_message },
-            "failure_message": {"S": failure_message },
+            "roll_desc": {"S": roll_desc or 'NULL'},
+            "must_beat": {"N": str(must_beat) if must_beat else 'NULL' },
+            "success_message": {"S": success_message or 'NULL' },
+            "failure_message": {"S": failure_message or 'NULL' },
         },
     )
 
