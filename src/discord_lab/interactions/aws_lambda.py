@@ -4,7 +4,7 @@ from typing import Any
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
-import requests
+import boto3
 
 from discord_lab.dice import *
 from discord_lab.interactions.env import *
@@ -84,6 +84,7 @@ EMOJI_ID_BY_CODE = {
     'D20_1':'<:d20_1:1282232679512805467>',
 }
 
+dynamodb_client = boto3.client('dynamodb')
 
 def die_roll_to_md(roll: DieRoll) -> str:
     if roll.type == DieType.D100:       
@@ -207,10 +208,14 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
 
 
 def askroll_cmd(req_body: dict) -> tuple[int,dict]:
+    interaction_id = req_body['id']
+    from_user_id = req_body['member']['user']['id']
     to_user_id = option_name_to_value(req_body, 'user')
     die_expr_str = option_name_to_value(req_body, 'dice')
     roll_desc = option_name_to_value(req_body, 'description', False)
     must_beat = option_name_to_value(req_body, 'must-beat', False)
+    success_message = option_name_to_value(req_body, 'success-message', False)
+    failure_message = option_name_to_value(req_body, 'failure-message', False)
 
     fields = [
         { "name": "Roller", "value": f"<@{to_user_id}>", "inline": True},
@@ -246,11 +251,20 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
         }
     }
 
-    res_data = {
-        'type': 5
-    }
+    dynamodb_client.put_item(
+        TableName="rollit-ask-queue",
+        Item={
+            "interaction_id": {"N":  interaction_id},
+            "from_user_id": {"N": from_user_id},
+            "to_user_id": {"N": to_user_id},
+            "die_expr": {"S": die_expr_str },
+            "roll_desc": {"S": roll_desc },
+            "must_beat": {"N": must_beat },
+            "success_message": {"S": success_message },
+            "failure_message": {"S": failure_message },
+        },
+    )
 
-    #return 200, res_data
     return 200, res_data
 
 

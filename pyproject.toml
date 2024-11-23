@@ -15,6 +15,9 @@ pyyaml = "^6.0.2"
 types-pyyaml = "^6.0.12.20240808"
 types-requests = "^2.32.0.20240712"
 pyparsing = "^3.1.4"
+pynamodb = "^6.0.1"
+boto3 = "^1.35.68"
+boto3-stubs = {extras = ["boto3"], version = "^1.35.68"}
 
 
 [tool.poetry.group.test.dependencies]
