@@ -309,10 +309,10 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     res_data = {
         #'type': 7, # UPDATE_MESSAGE
         'type': 6, # DEFERRED_UPDATE_MESSAGE
-        'data': {
-            'embeds': embeds,
-            'components': [],
-        }
+        #'data': {
+        #    'embeds': embeds,
+        #    'components': [],
+        #}
     }
 
     return 200, res_data
