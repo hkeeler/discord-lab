@@ -303,7 +303,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
 
     roll_req = dynamodb_client.get_item(
-        TableName='string',
+        TableName='rollit-askroll-queue',
         Key={
             'interaction_id': {
                 'N': interaction_id,
