@@ -246,7 +246,12 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
         }
     }
 
-    return 200, res_data
+    res_data = {
+        'type': 5
+    }
+
+    #return 200, res_data
+    return 202, res_data
 
 
 def slash_command(req_body: dict) -> tuple[int,dict]:
@@ -307,12 +312,12 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     )
 
     res_data = {
-        #'type': 7, # UPDATE_MESSAGE
-        'type': 6, # DEFERRED_UPDATE_MESSAGE
-        #'data': {
-        #    'embeds': embeds,
-        #    'components': [],
-        #}
+        'type': 7, # UPDATE_MESSAGE
+        #'type': 6, # DEFERRED_UPDATE_MESSAGE
+        'data': {
+            'embeds': embeds,
+            'components': [],
+        }
     }
 
     return 200, res_data
