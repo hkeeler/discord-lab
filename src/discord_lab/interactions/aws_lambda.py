@@ -251,7 +251,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     }
 
     #return 200, res_data
-    return 202, res_data
+    return 200, res_data
 
 
 def slash_command(req_body: dict) -> tuple[int,dict]:
