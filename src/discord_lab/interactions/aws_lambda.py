@@ -385,7 +385,7 @@ def adjust_roll_click(req_body: dict) -> tuple[int,dict]:
     res_data = {
         'type': 9, # Modal
         'data': {
-            "title": f"Adjust roll - {interaction_id} - {button_clicker_user_id}",
+            "title": f"Adjust roll",
             "custom_id": "adjust_roll_save",
             "components": [
                 {
