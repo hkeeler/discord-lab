@@ -302,6 +302,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     # Optional options
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
 
+    # Get roll req data from db
     roll_req = dynamodb_client.get_item(
         TableName='rollit-askroll-queue',
         Key={
@@ -309,9 +310,13 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
                 'N': interaction_id,
             }
         }    
-    )
+    )['Item']
 
+    success_message = roll_req.get('success_message', {}).get('S', None)
+    failure_message = roll_req.get('failure_message', {}).get('S', None)
     print(json.dumps(roll_req))
+
+
 
     # NOTE: button_clicker_user_id is an int, which requested_player_user_id is of for form <@{int}>
     if button_clicker_user_id not in requested_roller_user_id:
@@ -327,14 +332,16 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        result_md = render_expr_roll(die_expr_str, die_expr_roll, True)
+        #result_md = render_expr_roll(die_expr_str, die_expr_roll, True)
         result_md_no_total = render_expr_roll(die_expr_str, die_expr_roll, False)
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
                 res_embed_color = 5763719 # Green
+                res_message = success_message
             else:
                 res_embed_color = 15548997 # Red
+                res_message = failure_message
 
     except DieParseException as dpe:
         result_md_no_total = str(dpe)
@@ -342,6 +349,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds.append(
         {
             "color": res_embed_color,
+            "description": res_message,
             "fields": [
                 { "name": "Result", "value": die_expr_roll.value, "inline": True},
                 { "name": "Details", "value": result_md_no_total, "inline": True},
