@@ -245,6 +245,12 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             'style': 1, # Primary
                             'custom_id': 'roll_click'
                         },
+                        {
+                            'type': 2, # Button
+                            'label': 'Adjust',
+                            'style': 2, # Secondary
+                            'custom_id': 'roll_adjust_click'
+                        },
                     ]
                 }
             ]
@@ -371,15 +377,52 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     return 200, res_data
 
 
+
+def adjust_roll_click(req_body: dict) -> tuple[int,dict]:
+    interaction_id = req_body['message']['interaction']['id']
+    button_clicker_user_id = req_body['member']['user']['id']
+
+    res_data = {
+        'type': 9, # Modal
+        'data': {
+            "title": f"Adjust roll - {interaction_id} - {button_clicker_user_id}",
+            "custom_id": "adjust_roll_save",
+            "components": [
+                {
+                    "type": 1,
+                    "components": [
+                        {
+                            "type": 4,
+                            "custom_id": "adjust_roll_exp",
+                            "label": "Roll expression",
+                            "style": 1,
+                            "min_length": 2,
+                            "max_length": 100,
+                            "placeholder": "Example: +2 (Bless) -1 (Wisdom)",
+                            "required": True
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    return 200, res_data
+
+
+
 # FIXME: Make this flexible enough to accomidate other commands/components
 def message_component(req_body: dict) -> tuple[int,dict]:
     cmd_name = req_body['message']['interaction_metadata']['name']
     comp_id = req_body['message']['components'][0]['components'][0]['custom_id']
 
-    if cmd_name == 'askroll' and comp_id == 'roll_click':
-        return roll_click(req_body)
-    else:
-        raise ValueError(f"Component `{comp_id}` not implemented for command `{cmd_name}`")
+    if cmd_name == 'askroll':
+        if comp_id == 'roll_click':
+            return roll_click(req_body)
+        if comp_id == 'adjust_roll_click':
+            return adjust_roll_click(req_body)
+        
+    raise ValueError(f"Component `{comp_id}` not implemented for command `{cmd_name}`")
 
     
 def ping(req_body: dict) -> tuple[int,dict]:
