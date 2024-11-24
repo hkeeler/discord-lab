@@ -249,7 +249,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             'type': 2, # Button
                             'label': 'Adjust',
                             'style': 2, # Secondary
-                            'custom_id': 'roll_adjust_click'
+                            'custom_id': 'adjust_roll_click'
                         },
                     ]
                 }
