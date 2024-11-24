@@ -330,6 +330,8 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
         return 200, res_data
 
+    res_message = None
+
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
         #result_md = render_expr_roll(die_expr_str, die_expr_roll, True)
