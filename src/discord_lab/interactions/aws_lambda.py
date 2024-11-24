@@ -413,8 +413,8 @@ def adjust_roll_click(req_body: dict) -> tuple[int,dict]:
 
 # FIXME: Make this flexible enough to accomidate other commands/components
 def message_component(req_body: dict) -> tuple[int,dict]:
-    cmd_name = req_body['message']['interaction_metadata']['name']
-    comp_id = req_body['message']['components'][0]['components'][0]['custom_id']
+    cmd_name = req_body['message']['interaction']['name']
+    comp_id = req_body['data']['custom_id']
 
     if cmd_name == 'askroll':
         if comp_id == 'roll_click':
