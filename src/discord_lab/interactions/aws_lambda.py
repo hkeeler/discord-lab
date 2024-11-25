@@ -6,6 +6,8 @@ from nacl.exceptions import BadSignatureError
 
 import boto3
 
+import requests
+
 from discord_lab.dice import *
 from discord_lab.interactions.env import *
 
@@ -187,6 +189,16 @@ def embed_field_to_value(embeds: list[dict], field_name, required: bool = True) 
         raise ValueError(f"Required embed field not present: {field_name}")
     else:
         return None
+
+
+def get_interaction_message(interaction_token: str) -> dict:
+    message_url = f'{DISCORD_API_URL_BASE}/webhooks/{DISCORD_APP_ID}/{interaction_token}/messages/@original'
+
+    orig_msg_resp = requests.get(message_url)
+    orig_msg = orig_msg_resp.json()
+    orig_msg_resp.raise_for_status()
+
+    return orig_msg
 
 
 def roll_cmd(req_body: dict) -> tuple[int,dict]:
@@ -434,6 +446,9 @@ def message_component(req_body: dict) -> tuple[int,dict]:
 
 
 def adjust_roll_modal_submit(req_body: dict) -> tuple[int,dict]:
+    message = req_body['message']
+    embeds = message['embeds']
+    req_embed_fields = embeds[0]['fields']
     interaction_id = req_body['message']['interaction']['id']
     player_roll_adjust = req_body['data']['components'][0]['components'][0]['value']
 
@@ -454,12 +469,28 @@ def adjust_roll_modal_submit(req_body: dict) -> tuple[int,dict]:
         },
     )
 
+    prev_adj_val = embed_field_to_value(embeds, 'Adjustment')
+
+    if prev_adj_val:
+        for field in req_embed_fields:
+            if field['name'] == 'Adjustment':
+                field['value'] = player_roll_adjust
+    else:
+        req_embed_fields.append(
+            { "name": "Adjustment", "value": player_roll_adjust, "inline": True},
+        )
+
+    #res_data = {
+    #    'type': 4,
+    #    'data': {
+    #        'content': f"**{player_roll_adjust}** set to `player_roll_adjust`. ",
+    #        'flags': 64 # Ephemeral
+    #    }
+    #}
+
     res_data = {
-        'type': 4,
-        'data': {
-            'content': f"**{player_roll_adjust}** set to `player_roll_adjust`. ",
-            'flags': 64 # Ephemeral
-        }
+        'type': 7, # UPDATE_MESSAGE
+        'data': message
     }
 
     return 200, res_data
