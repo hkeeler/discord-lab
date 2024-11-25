@@ -470,7 +470,7 @@ def adjust_roll_modal_submit(req_body: dict) -> tuple[int,dict]:
         },
     )
 
-    prev_adj_val = embed_field_to_value(embeds, 'Adjustment', False)
+    prev_adj_val = embed_field_to_value(req_embed_fields, 'Adjustment', False)
 
     if prev_adj_val:
         for field in req_embed_fields:
