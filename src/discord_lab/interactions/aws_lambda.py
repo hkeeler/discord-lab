@@ -276,9 +276,6 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if failure_message:
         dynamodb_item['failure_message'] = {"S": failure_message }
 
-
-    print(json.dumps(dynamodb_item))
-
     dynamodb_client.put_item(
         TableName="rollit-askroll-queue",
         Item=dynamodb_item,
@@ -315,14 +312,12 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             'interaction_id': {
                 'N': interaction_id,
             }
-        }    
+        },
+        ConsistentRead=True
     )['Item']
 
     success_message = roll_req.get('success_message', {}).get('S', None)
     failure_message = roll_req.get('failure_message', {}).get('S', None)
-    print(json.dumps(roll_req))
-
-
 
     # NOTE: button_clicker_user_id is an int, which requested_player_user_id is of for form <@{int}>
     if button_clicker_user_id not in requested_roller_user_id:
@@ -340,7 +335,6 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     try:
         die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        #result_md = render_expr_roll(die_expr_str, die_expr_roll, True)
         result_md_no_total = render_expr_roll(die_expr_str, die_expr_roll, False)
 
         if must_beat:
@@ -367,7 +361,6 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     res_data = {
         'type': 7, # UPDATE_MESSAGE
-        #'type': 6, # DEFERRED_UPDATE_MESSAGE
         'data': {
             'embeds': embeds,
             'components': [],
@@ -380,7 +373,22 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
 def adjust_roll_click(req_body: dict) -> tuple[int,dict]:
     interaction_id = req_body['message']['interaction']['id']
+
+    # TODO: Check to make sure user allowed to make adjustments
     button_clicker_user_id = req_body['member']['user']['id']
+
+    # Get roll req data from db
+    roll_req = dynamodb_client.get_item(
+        TableName='rollit-askroll-queue',
+        Key={
+            'interaction_id': {
+                'N': interaction_id,
+            }
+        },
+        ConsistentRead=True
+    )['Item']
+
+    player_roll_adjust = roll_req.get('player_roll_adjust', {}).get('S', None)
 
     res_data = {
         'type': 9, # Modal
@@ -399,7 +407,8 @@ def adjust_roll_click(req_body: dict) -> tuple[int,dict]:
                             "min_length": 2,
                             "max_length": 100,
                             "placeholder": "Example: +2 (Bless) -1 (Wisdom)",
-                            "required": True
+                            "required": True,
+                            "value": player_roll_adjust
                         }
                     ]
                 }
@@ -408,7 +417,6 @@ def adjust_roll_click(req_body: dict) -> tuple[int,dict]:
     }
 
     return 200, res_data
-
 
 
 # FIXME: Make this flexible enough to accomidate other commands/components
@@ -424,6 +432,49 @@ def message_component(req_body: dict) -> tuple[int,dict]:
         
     raise ValueError(f"Component `{comp_id}` not implemented for command `{cmd_name}`")
 
+
+def adjust_roll_modal_submit(req_body: dict) -> tuple[int,dict]:
+    interaction_id = req_body['message']['interaction']['id']
+    player_roll_adjust = req_body['data']['components'][0]['components'][0]['value']
+
+    dynamodb_client.update_item(
+        TableName="rollit-askroll-queue",
+        Key={
+            'interaction_id': {
+                'N': interaction_id,
+            }
+        },
+        AttributeUpdates={
+            'player_roll_adjust': {
+                'Value': {
+                    'S': player_roll_adjust,
+                },
+                'Action': 'PUT'
+            }
+        },
+    )
+
+    res_data = {
+        'type': 4,
+        'data': {
+            'content': f"**{player_roll_adjust}** set to `player_roll_adjust`. ",
+            'flags': 64 # Ephemeral
+        }
+    }
+
+    return 200, res_data
+
+
+def modal_submit(req_body: dict) -> tuple[int,dict]:
+    cmd_name = req_body['message']['interaction']['name']
+    comp_id = req_body['data']['custom_id']
+
+    if cmd_name == 'askroll':
+        if comp_id == 'adjust_roll_save':
+            return adjust_roll_modal_submit(req_body)
+
+    raise ValueError(f"Modal `{comp_id}` not implemented for command `{cmd_name}`")
+
     
 def ping(req_body: dict) -> tuple[int,dict]:
     return 200, {'type':1}
@@ -438,6 +489,7 @@ interaction_type_dispatch={
     1:ping,
     2:slash_command,
     3:message_component,
+    5:modal_submit,
 }
 
 
