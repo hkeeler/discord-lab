@@ -448,6 +448,7 @@ def message_component(req_body: dict) -> tuple[int,dict]:
 def adjust_roll_modal_submit(req_body: dict) -> tuple[int,dict]:
     message = req_body['message']
     embeds = message['embeds']
+    components = message['components']
     req_embed_fields = embeds[0]['fields']
     interaction_id = req_body['message']['interaction']['id']
     player_roll_adjust = req_body['data']['components'][0]['components'][0]['value']
@@ -490,7 +491,10 @@ def adjust_roll_modal_submit(req_body: dict) -> tuple[int,dict]:
 
     res_data = {
         'type': 7, # UPDATE_MESSAGE
-        'data': message
+        'data': {
+            'embeds': embeds,
+            'components': components,
+        }
     }
 
     return 200, res_data
