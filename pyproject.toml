@@ -6,6 +6,7 @@ authors = ["Hans Keeler <hkeeler@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "discord_lab", from = "src" }]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
