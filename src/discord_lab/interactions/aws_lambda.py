@@ -316,6 +316,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     # Optional options
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
+    adjust_expr_str: str = embed_field_to_value(req_embed_fields, 'Adjustment', False) or ''
 
     # Get roll req data from db
     roll_req = dynamodb_client.get_item(
@@ -346,7 +347,9 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     res_message = None
 
     try:
-        die_expr_roll = DieExpr.parse(die_expr_str).roll()
+        # FIXME: Improve merge of two expr strings
+        die_expr_with_adjust = f"{die_expr_str} {adjust_expr_str}"
+        die_expr_roll = DieExpr.parse(die_expr_with_adjust).roll()
         result_md_no_total = render_expr_roll(die_expr_str, die_expr_roll, False)
 
         if must_beat:
