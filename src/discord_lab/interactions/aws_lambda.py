@@ -179,6 +179,13 @@ def option_name_to_value(req_body: dict, option_name: str, required: bool = True
     else:
         return None
 
+def option_name_to_image_url(req_body: dict, option_name: str, required: bool = True) -> str|None:
+    attachment_id = option_name_to_value(req_body, option_name, required)
+    if attachment_id:
+        url = req_body['resolved']['attachments'][attachment_id]['url']
+        return url
+    else:
+        return None
 
 def embed_field_to_value(embeds: list[dict], field_name, required: bool = True) -> Any:
     for embed in embeds:
@@ -228,6 +235,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     must_beat = option_name_to_value(req_body, 'must-beat', False)
     success_message = option_name_to_value(req_body, 'success-message', False)
     failure_message = option_name_to_value(req_body, 'failure-message', False)
+    image_url = option_name_to_image_url(req_body, 'image', False)
 
     fields = [
         { "name": "Roller", "value": f"<@{to_user_id}>", "inline": True},
@@ -268,6 +276,9 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
             ]
         }
     }
+
+    if image_url:
+        res_data['data']['embeds'][0]['image']['url'] = image_url
 
     dynamodb_item = {
         "interaction_id": {"N":  interaction_id},
