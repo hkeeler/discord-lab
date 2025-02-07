@@ -182,7 +182,7 @@ def option_name_to_value(req_body: dict, option_name: str, required: bool = True
 def option_name_to_image_url(req_body: dict, option_name: str, required: bool = True) -> str|None:
     attachment_id = option_name_to_value(req_body, option_name, required)
     if attachment_id:
-        url = req_body['resolved']['attachments'][attachment_id]['url']
+        url = req_body['data']['resolved']['attachments'][attachment_id]['url']
         return url
     else:
         return None
@@ -278,7 +278,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     }
 
     if image_url:
-        res_data['data']['embeds'][0]['image']['url'] = image_url
+        res_data['data']['embeds'][0]['image'] = {'url': image_url}
 
     dynamodb_item = {
         "interaction_id": {"N":  interaction_id},
