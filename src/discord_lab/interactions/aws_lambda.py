@@ -231,26 +231,26 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     from_user_id = req_body['member']['user']['id']
     to_user_id = option_name_to_value(req_body, 'user')
     die_expr_str = option_name_to_value(req_body, 'dice')
-    roll_desc = option_name_to_value(req_body, 'description', False)
+    message_text = option_name_to_value(req_body, 'message-text', False)
+    message_image_url = option_name_to_image_url(req_body, 'message-image', False)
     must_beat = option_name_to_value(req_body, 'must-beat', False)
-    success_message = option_name_to_value(req_body, 'success-message', False)
-    failure_message = option_name_to_value(req_body, 'failure-message', False)
-    image_url = option_name_to_image_url(req_body, 'image', False)
+    success_text = option_name_to_value(req_body, 'success-text', False)
+    success_image_url = option_name_to_image_url(req_body, 'success-image', False)
+    failure_text = option_name_to_value(req_body, 'failure-text', False)
+    failure_image_url = option_name_to_image_url(req_body, 'failure-image', False)
 
     fields = [
         { "name": "Roller", "value": f"<@{to_user_id}>", "inline": True},
         { "name": "Dice", "value": die_expr_str, "inline": True},
     ]
 
-    if must_beat:
-        fields.append({"name": "Must Beat", "value": must_beat, "inline": True})
-
     res_data = {
         'type': 4,
         'data': {
             'embeds': [
                 {
-                    "description": roll_desc,
+                    "description": message_text,
+                    "image": {"url": message_image_url} if message_image_url else None,
                     "color": 9807270, # Grey
                     "fields": fields,
                 }
@@ -277,9 +277,6 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
         }
     }
 
-    if image_url:
-        res_data['data']['embeds'][0]['image'] = {'url': image_url}
-
     dynamodb_item = {
         "interaction_id": {"N":  interaction_id},
         "from_user_id": {"N": from_user_id},
@@ -287,17 +284,29 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
         "die_expr": {"S": die_expr_str },
     }
 
-    if roll_desc:
-        dynamodb_item['roll_desc'] = {"S": roll_desc }
+    if message_text:
+        dynamodb_item['message_text'] = {"S": message_text }
+
+    #if message_image_url:
+    #    res_data['data']['embeds'][0]['image'] = {'url': message_image_url}
+
 
     if must_beat:
+        fields.append({"name": "Must Beat", "value": must_beat, "inline": True})
         dynamodb_item['must_beat'] = {"N": str(must_beat) }
 
-    if success_message:
-        dynamodb_item['success_message'] = {"S": success_message }
+        if success_text:
+            dynamodb_item['success_text'] = {"S": success_text }
 
-    if failure_message:
-        dynamodb_item['failure_message'] = {"S": failure_message }
+        if success_image_url:
+            dynamodb_item['success_image_url'] = {"S": success_image_url }
+
+        if failure_text:
+            dynamodb_item['failure_text'] = {"S": failure_text }
+
+        if failure_image_url:
+            dynamodb_item['failure_image_url'] = {"S": failure_image_url }
+
 
     dynamodb_client.put_item(
         TableName="rollit-askroll-queue",
