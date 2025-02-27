@@ -349,9 +349,9 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         ConsistentRead=True
     )['Item']
 
-    success_message = roll_req.get('success_message', {}).get('S', None)
+    success_text = roll_req.get('success_text', {}).get('S', None)
     success_image_url = roll_req.get('success_image_url', {}).get('S', None)
-    failure_message = roll_req.get('failure_message', {}).get('S', None)
+    failure_text = roll_req.get('failure_text', {}).get('S', None)
     failure_image_url = roll_req.get('failure_image_url', {}).get('S', None)
 
     # NOTE: button_clicker_user_id is an int, which requested_player_user_id is of for form <@{int}>
@@ -378,11 +378,11 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         if must_beat:
             if die_expr_roll.value > int(must_beat):
                 res_embed_color = 5763719 # Green
-                res_message = success_message
+                res_message = success_text
                 res_image = success_image_url
             else:
                 res_embed_color = 15548997 # Red
-                res_message = failure_message
+                res_message = failure_text
                 res_image = failure_image_url
 
     except DieParseException as dpe:
