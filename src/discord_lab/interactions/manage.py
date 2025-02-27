@@ -87,6 +87,22 @@ roll_cmd = {
             'required': True,
             'min_length': 2,
             'max_length': 100
+        },
+        {
+            'type': 3,
+            'name': 'multi_roll',
+            'description': "Multi-roll (advantage)",
+            'required': False,
+            'choices': [
+                {
+                    "name": "Best of 2 / Advantage",
+                    "value": "best"
+                },
+                {
+                    "name": "Worst of 2 / Disadvantage",
+                    "value": "worst"
+                },
+            ],
         }
     ]
 }
@@ -113,14 +129,6 @@ askroll_cmd = {
             'max_length': 100
         },
         {
-            'type': 3,
-            'name': 'description',
-            'description': "Description",
-            'required': False,
-            'min_length': 5,
-            'max_length': 100
-        },
-        {
             'type': 4,
             'name': 'must-beat',
             'description': "Must beat?",
@@ -130,20 +138,46 @@ askroll_cmd = {
         },
         {
             'type': 3,
-            'name': 'success-message',
-            'description': "Success message",
+            'name': 'message-text',
+            'description': "Message text",
+            'required': False,
+            'min_length': 5,
+            'max_length': 100
+        },
+        {
+            'type': 11,
+            'name': 'message-image',
+            'description': "Message image",
+            'required': False,
+        },
+        {
+            'type': 3,
+            'name': 'success-text',
+            'description': "Success text",
             'required': False,
             'min_value': 3,
             'max_value': 100
         },
         {
+            'type': 11,
+            'name': 'success-image',
+            'description': "Success image",
+            'required': False,
+        },
+        {
             'type': 3,
-            'name': 'failure-message',
-            'description': "Failure message",
+            'name': 'failure-text',
+            'description': "Failure text",
             'required': False,
             'min_value': 3,
             'max_value': 100
-        }
+        },
+        {
+            'type': 11,
+            'name': 'failure-image',
+            'description': "Failure image",
+            'required': False,
+        },
     ]
 }
 sync_global_app_cmd(app_id, askroll_cmd)
