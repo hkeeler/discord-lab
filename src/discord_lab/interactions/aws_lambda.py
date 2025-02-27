@@ -350,7 +350,9 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     )['Item']
 
     success_message = roll_req.get('success_message', {}).get('S', None)
+    success_image_url = roll_req.get('success_image_url', {}).get('S', None)
     failure_message = roll_req.get('failure_message', {}).get('S', None)
+    failure_image_url = roll_req.get('failure_image_url', {}).get('S', None)
 
     # NOTE: button_clicker_user_id is an int, which requested_player_user_id is of for form <@{int}>
     if button_clicker_user_id not in requested_roller_user_id:
@@ -365,6 +367,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         return 200, res_data
 
     res_message = None
+    res_image = None
 
     try:
         # FIXME: Improve merge of two expr strings
@@ -376,9 +379,11 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             if die_expr_roll.value > int(must_beat):
                 res_embed_color = 5763719 # Green
                 res_message = success_message
+                res_image = success_image_url
             else:
                 res_embed_color = 15548997 # Red
                 res_message = failure_message
+                res_image = failure_image_url
 
     except DieParseException as dpe:
         result_md_no_total = str(dpe)
@@ -387,6 +392,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         {
             "color": res_embed_color,
             "description": res_message,
+            "image": {"url": res_image} if res_image else None,
             "fields": [
                 { "name": "Result", "value": die_expr_roll.value, "inline": True},
                 { "name": "Details", "value": result_md_no_total, "inline": True},
