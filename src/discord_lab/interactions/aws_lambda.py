@@ -261,16 +261,33 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                     'components': [
                         {
                             'type': 2, # Button
+                            'custom_id': 'roll_click',
                             'label': 'Roll!',
                             'style': 1, # Primary
-                            'custom_id': 'roll_click'
                         },
                         {
                             'type': 2, # Button
+                            'custom_id': 'adjust_roll_click',
                             'label': 'Adjust',
                             'style': 2, # Secondary
-                            'custom_id': 'adjust_roll_click'
                         },
+                        {
+                            "type": 3,
+                            "custom_id": "multi_roll",
+                            "placeholder": "Multi-roll",
+                            "options":[
+                                {
+                                    "label": "Best of 2 / Advantage",
+                                    "value": "best",
+                                },
+                                {
+                                    "label": "Worst of 2 / Disadvantage",
+                                    "value": "worst",
+                                },
+                            ],
+                            #"min_values": 1,
+                            #"max_values": 3
+                        }
                     ]
                 }
             ]
