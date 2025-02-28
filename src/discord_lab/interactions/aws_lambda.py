@@ -285,15 +285,16 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             'type': 2, # Button
                             'custom_id': 'roll_click',
                             'label': 'Roll!',
+                            'emoji': {'name': '🎲'},
                             'style': 1, # Primary
                         },
                         {
                             'type': 2, # Button
                             'custom_id': 'adjust_roll_click',
+                            'emoji': {'name': '🔧'},
                             'label': 'Adjust',
                             'style': 2, # Secondary
                         },
-
                     ]
                 }
             ]
