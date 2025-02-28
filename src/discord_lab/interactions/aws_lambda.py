@@ -240,7 +240,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     failure_image_url = option_name_to_image_url(req_body, 'failure-image', False)
 
     fields = [
-        { "name": "Roller", "value": f"<@{to_user_id}>", "inline": True},
+        { "name": "Player", "value": f"<@{to_user_id}>", "inline": True},
         { "name": "Dice", "value": die_expr_str, "inline": True},
     ]
 
@@ -359,7 +359,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     # Required options
     die_expr_str = embed_field_to_value(req_embed_fields, 'Dice')
-    requested_roller_user_id = embed_field_to_value(req_embed_fields, 'Roller')
+    requested_roller_user_id = embed_field_to_value(req_embed_fields, 'Player')
 
     # Optional options
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
