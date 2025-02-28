@@ -271,23 +271,23 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             'label': 'Adjust',
                             'style': 2, # Secondary
                         },
-                        {
-                            "type": 3,
-                            "custom_id": "multi_roll",
-                            "placeholder": "Multi-roll",
-                            "options":[
-                                {
-                                    "label": "Best of 2 / Advantage",
-                                    "value": "best",
-                                },
-                                {
-                                    "label": "Worst of 2 / Disadvantage",
-                                    "value": "worst",
-                                },
-                            ],
-                            #"min_values": 1,
-                            #"max_values": 3
-                        }
+                        #{
+                        #    "type": 3,
+                        #    "custom_id": "multi_roll",
+                        #    "placeholder": "Multi-roll",
+                        #    "options":[
+                        #        {
+                        #            "label": "Best of 2 / Advantage",
+                        #            "value": "best",
+                        #        },
+                        #        {
+                        #            "label": "Worst of 2 / Disadvantage",
+                        #            "value": "worst",
+                        #        },
+                        #    ],
+                        #    #"min_values": 1,
+                        #    #"max_values": 3
+                        #}
                     ]
                 }
             ]
