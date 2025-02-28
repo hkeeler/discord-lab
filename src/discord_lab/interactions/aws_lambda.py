@@ -260,6 +260,26 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                     'type': 1,
                     'components': [
                         {
+                            "type": 3,
+                            "custom_id": "multi_roll",
+                            "placeholder": "Multi-roll",
+                            "options":[
+                                {
+                                    "label": "Best of 2 / Advantage",
+                                    "value": "best",
+                                },
+                                {
+                                    "label": "Worst of 2 / Disadvantage",
+                                    "value": "worst",
+                                },
+                            ],
+                        }
+                    ]
+                },
+                {
+                    'type': 1,
+                    'components': [
+                        {
                             'type': 2, # Button
                             'custom_id': 'roll_click',
                             'label': 'Roll!',
@@ -271,60 +291,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             'label': 'Adjust',
                             'style': 2, # Secondary
                         },
-                        {
-                            "type": 3,
-                            "custom_id": "class_select_1",
-                            "options":[
-                                {
-                                    "label": "Rogue",
-                                    "value": "rogue",
-                                    "description": "Sneak n stab",
-                                    "emoji": {
-                                        "name": "rogue",
-                                        "id": "625891304148303894"
-                                    }
-                                },
-                                {
-                                    "label": "Mage",
-                                    "value": "mage",
-                                    "description": "Turn 'em into a sheep",
-                                    "emoji": {
-                                        "name": "mage",
-                                        "id": "625891304081063986"
-                                    }
-                                },
-                                {
-                                    "label": "Priest",
-                                    "value": "priest",
-                                    "description": "You get heals when I'm done doing damage",
-                                    "emoji": {
-                                        "name": "priest",
-                                        "id": "625891303795982337"
-                                    }
-                                }
-                            ],
-                            "placeholder": "Choose a class",
-                            "min_values": 1,
-                            "max_values": 3
-                        }
 
-                        #{
-                        #    "type": 3,
-                        #    "custom_id": "multi_roll",
-                        #    "placeholder": "Multi-roll",
-                        #    "options":[
-                        #        {
-                        #            "label": "Best of 2 / Advantage",
-                        #            "value": "best",
-                        #        },
-                        #        {
-                        #            "label": "Worst of 2 / Disadvantage",
-                        #            "value": "worst",
-                        #        },
-                        #    ],
-                        #    #"min_values": 1,
-                        #    #"max_values": 3
-                        #}
                     ]
                 }
             ]
