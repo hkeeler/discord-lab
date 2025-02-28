@@ -261,8 +261,8 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                     'components': [
                         {
                             "type": 3,
-                            "custom_id": "multi_roll",
-                            "placeholder": "Multi-roll",
+                            "custom_id": "special_roll_types",
+                            "placeholder": "Select special roll type(s)",
                             "options":[
                                 {
                                     "label": "Best of 2 / Advantage",
@@ -273,6 +273,8 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                                     "value": "worst",
                                 },
                             ],
+                            "min_values": 0,
+                            "max_values": 2,
                         }
                     ]
                 },
@@ -343,7 +345,7 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
     return cmd_name_dispatch[cmd_name](req_body)
 
 
-def multi_roll_select(req_body: dict) -> tuple[int,dict]:
+def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
     return 200, {'type':6} # DEFERRED_MESSAGE_UPDATE
 
 
@@ -495,8 +497,8 @@ def message_component(req_body: dict) -> tuple[int,dict]:
             return roll_click(req_body)
         if comp_id == 'adjust_roll_click':
             return adjust_roll_click(req_body)
-        if comp_id == 'multi_roll':
-            return multi_roll_select(req_body)
+        if comp_id == 'special_roll_types':
+            return special_roll_types_select(req_body)
         
     raise ValueError(f"Component `{comp_id}` not implemented for command `{cmd_name}`")
 
