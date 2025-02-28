@@ -343,6 +343,10 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
     return cmd_name_dispatch[cmd_name](req_body)
 
 
+def multi_roll_select(req_body: dict) -> tuple[int,dict]:
+    return 200, {'type':6} # DEFERRED_MESSAGE_UPDATE
+
+
 def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds = req_body['message']['embeds']
     req_embed_fields = embeds[0]['fields']
@@ -491,6 +495,8 @@ def message_component(req_body: dict) -> tuple[int,dict]:
             return roll_click(req_body)
         if comp_id == 'adjust_roll_click':
             return adjust_roll_click(req_body)
+        if comp_id == 'multi_roll':
+            return multi_roll_select(req_body)
         
     raise ValueError(f"Component `{comp_id}` not implemented for command `{cmd_name}`")
 
