@@ -269,4 +269,43 @@ class DieExpr:
             _str += f" {term_op}"
 
         return _str
+
     
+class DieExprMultiRollType(Enum):
+    ADVANTAGE = 'advantage'
+    DISADVANTAGE = 'disadvantage'
+
+    def resolve(self, roll_1: DieExprRoll, roll_2: DieExprRoll) -> DieExprMultiRollResult:
+        result_roll: DieExprRoll
+
+        if self == DieExprMultiRollType.ADVANTAGE:
+            if roll_1.value > roll_2.value:
+                result_roll = roll_1
+            else:
+                result_roll = roll_2
+        else:
+            if roll_1.value < roll_2.value:
+                result_roll = roll_1
+            else:
+                result_roll = roll_2
+            
+        return DieExprMultiRollResult(self, (roll_1, roll_2), result_roll)
+            
+
+@dataclass
+class DieExprMultiRollResult:
+    type: DieExprMultiRollType
+    rolls: tuple[DieExprRoll, DieExprRoll]
+    winning_roll: DieExprRoll
+     
+
+@dataclass
+class DieExprMultiRoll:
+    die_expr: DieExpr
+    type: DieExprMultiRollType
+
+    def roll(self) -> DieExprMultiRollResult:
+        roll_1 = self.die_expr.roll()
+        roll_2 = self.die_expr.roll()
+
+        return self.type.resolve(roll_1, roll_2)

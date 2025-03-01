@@ -124,7 +124,7 @@ def render_multidie_roll(rolls: MultiDieRoll, include_total: bool) -> str:
 
 
 
-def render_expr_roll(die_expr_str: str, rolls: DieExprRoll, include_total: bool) -> str:
+def render_expr_roll(rolls: DieExprRoll, include_total: bool) -> str:
     roll_results = rolls.results
 
     # If only a single die is rolled, just show that roll without the math bits
@@ -210,9 +210,20 @@ def get_interaction_message(interaction_token: str) -> dict:
 
 def roll_cmd(req_body: dict) -> tuple[int,dict]:
     die_expr_str = option_name_to_value(req_body, 'dice')
+    multi_roll_type_str = option_name_to_value(req_body, 'multi-roll')
+
     try:
-        die_expr_roll = DieExpr.parse(die_expr_str).roll()
-        content = render_expr_roll(die_expr_str, die_expr_roll, True)
+        if multi_roll_type_str:
+            multi_roll_type = DieExprMultiRollType[multi_roll_type_str]
+            multi_roll_results = DieExprMultiRoll.roll(die_expr_str, multi_roll_type)
+            roll_1, roll_2 = multi_roll_results.result_roll
+            
+            content = render_expr_roll(roll_1, False) + ':point_left: ' if multi_roll_results.winning_roll == roll_1 else ''
+            content += '\n' + render_expr_roll(roll_2, False) + ':point_left: ' if multi_roll_results.winning_roll == roll_2 else ''                
+            
+        else:
+            die_expr_roll = DieExpr.parse(die_expr_str).roll()
+            content = render_expr_roll(die_expr_roll, True)
     except DieParseException as dpe:
         content = f'# ???\n{dpe}'
 
@@ -262,19 +273,19 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                         {
                             "type": 3,
                             "custom_id": "special_roll_types",
-                            "placeholder": "Select special roll type(s)",
+                            "placeholder": "Special rolls",
                             "options":[
                                 {
-                                    "label": "Best of 2 / Advantage",
-                                    "value": "best",
+                                    "label": "Advantage",
+                                    "value": "advantage",
                                 },
                                 {
-                                    "label": "Worst of 2 / Disadvantage",
-                                    "value": "worst",
+                                    "label": "Disadvantage",
+                                    "value": "disadvantage",
                                 },
                             ],
                             "min_values": 0,
-                            "max_values": 2,
+                            "max_values": 1,
                         }
                     ]
                 },
@@ -401,7 +412,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         # FIXME: Improve merge of two expr strings
         die_expr_with_adjust = f"{die_expr_str} {adjust_expr_str}"
         die_expr_roll = DieExpr.parse(die_expr_with_adjust).roll()
-        result_md_no_total = render_expr_roll(die_expr_str, die_expr_roll, False)
+        result_md_no_total = render_expr_roll(die_expr_roll, False)
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
