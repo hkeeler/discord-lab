@@ -210,7 +210,7 @@ def get_interaction_message(interaction_token: str) -> dict:
 
 def roll_cmd(req_body: dict) -> tuple[int,dict]:
     die_expr_str = option_name_to_value(req_body, 'dice')
-    multi_roll_type_str = option_name_to_value(req_body, 'multi-roll')
+    multi_roll_type_str = option_name_to_value(req_body, 'multi-roll', False)
 
     try:
         if multi_roll_type_str:
