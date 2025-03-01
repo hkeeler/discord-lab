@@ -224,7 +224,7 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
             roll_1_md = render_expr_roll(roll_1, False) + (' :point_left: ' if resolved_roll == roll_1 else '')
             roll_2_md = render_expr_roll(roll_2, False) + (' :point_left: ' if resolved_roll == roll_2 else '')
 
-            content = f"{roll_1_md}\n{roll_2_md}"
+            content = f"{roll_1_md}\n{roll_2_md}\n# {resolved_roll.value}"
         else:
             die_expr_roll = die_expr.roll()
             content = render_expr_roll(die_expr_roll, True)
