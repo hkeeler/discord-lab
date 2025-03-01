@@ -221,9 +221,10 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
             roll_1, roll_2 = multi_roll_results.rolls
             resolved_roll = multi_roll_results.resolved_roll
             
-            content = render_expr_roll(roll_1, False) + ':point_left: ' if resolved_roll == roll_1 else ''
-            content += '\n' + render_expr_roll(roll_2, False) + ':point_left: ' if resolved_roll == roll_2 else ''
-            
+            roll_1_md = render_expr_roll(roll_1, False) + (' :point_left: ' if resolved_roll == roll_1 else '')
+            roll_2_md = render_expr_roll(roll_2, False) + (' :point_left: ' if resolved_roll == roll_2 else '')
+
+            content = f"{roll_1_md}\n{roll_2_md}"
         else:
             die_expr_roll = die_expr.roll()
             content = render_expr_roll(die_expr_roll, True)
