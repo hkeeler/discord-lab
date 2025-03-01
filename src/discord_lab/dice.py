@@ -296,7 +296,7 @@ class DieExprMultiRollType(Enum):
 class DieExprMultiRollResult:
     type: DieExprMultiRollType
     rolls: tuple[DieExprRoll, DieExprRoll]
-    winning_roll: DieExprRoll
+    resolved_roll: DieExprRoll
      
 
 @dataclass

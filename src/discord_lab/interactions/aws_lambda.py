@@ -215,11 +215,12 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
     try:
         if multi_roll_type_str:
             multi_roll_type = DieExprMultiRollType[multi_roll_type_str]
-            multi_roll_results = DieExprMultiRoll.roll(die_expr_str, multi_roll_type)
-            roll_1, roll_2 = multi_roll_results.result_roll
+            multi_roll_results = DieExprMultiRoll(die_expr_str, multi_roll_type).roll()
+            roll_1, roll_2 = multi_roll_results.rolls
+            resolved_roll = multi_roll_results.resolved_roll
             
-            content = render_expr_roll(roll_1, False) + ':point_left: ' if multi_roll_results.winning_roll == roll_1 else ''
-            content += '\n' + render_expr_roll(roll_2, False) + ':point_left: ' if multi_roll_results.winning_roll == roll_2 else ''                
+            content = render_expr_roll(roll_1, False) + ':point_left: ' if resolved_roll == roll_1 else ''
+            content += '\n' + render_expr_roll(roll_2, False) + ':point_left: ' if resolved_roll == roll_2 else ''
             
         else:
             die_expr_roll = DieExpr.parse(die_expr_str).roll()
