@@ -212,10 +212,12 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
     die_expr_str = option_name_to_value(req_body, 'dice')
     multi_roll_type_str = option_name_to_value(req_body, 'multi-roll', False)
 
+    die_expr = DieExpr.parse(die_expr_str)
+
     try:
         if multi_roll_type_str:
             multi_roll_type = DieExprMultiRollType[multi_roll_type_str]
-            multi_roll_results = DieExprMultiRoll(die_expr_str, multi_roll_type).roll()
+            multi_roll_results = DieExprMultiRoll(die_expr, multi_roll_type).roll()
             roll_1, roll_2 = multi_roll_results.rolls
             resolved_roll = multi_roll_results.resolved_roll
             
@@ -223,7 +225,7 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
             content += '\n' + render_expr_roll(roll_2, False) + ':point_left: ' if resolved_roll == roll_2 else ''
             
         else:
-            die_expr_roll = DieExpr.parse(die_expr_str).roll()
+            die_expr_roll = die_expr.roll()
             content = render_expr_roll(die_expr_roll, True)
     except DieParseException as dpe:
         content = f'# ???\n{dpe}'
