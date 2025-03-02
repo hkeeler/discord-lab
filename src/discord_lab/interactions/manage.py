@@ -90,17 +90,17 @@ roll_cmd = {
         },
         {
             'type': 3,
-            'name': 'multi_roll',
-            'description': "Multi-roll (advantage)",
+            'name': 'multi-roll',
+            'description': "Take best/worst of multiple rolls. Use for advantage/disadvantage.",
             'required': False,
             'choices': [
                 {
-                    "name": "Best of 2 / Advantage",
-                    "value": "best"
+                    "name": "Best / Advantage",
+                    "value": "BEST"
                 },
                 {
-                    "name": "Worst of 2 / Disadvantage",
-                    "value": "worst"
+                    "name": "Worst / Disadvantage",
+                    "value": "WORST"
                 },
             ],
         }

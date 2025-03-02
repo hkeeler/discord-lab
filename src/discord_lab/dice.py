@@ -272,8 +272,8 @@ class DieExpr:
 
     
 class DieExprMultiRollType(Enum):
-    ADVANTAGE = 'advantage'
-    DISADVANTAGE = 'disadvantage'
+    BEST = 'Best / Advantage'
+    WORST = 'Worst / Disadvantage'
 
     def resolve(self, roll_1: DieExprRoll, roll_2: DieExprRoll) -> DieExprMultiRollResult:
         result_roll: DieExprRoll
