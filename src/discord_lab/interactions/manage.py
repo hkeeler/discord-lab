@@ -4,6 +4,7 @@ import requests
 
 from discord_lab.interactions import env
 from discord_lab.interactions.auth import get_oauth2_access_token
+from discord_lab.dice import DieExprMultiRollType
 
 API_URL_BASE='https://discord.com/api/v10'
 INTERACTION_SCOPES=[
@@ -96,11 +97,11 @@ roll_cmd = {
             'choices': [
                 {
                     "name": "Best / Advantage",
-                    "value": "BEST"
+                    "value": DieExprMultiRollType.BEST.name
                 },
                 {
                     "name": "Worst / Disadvantage",
-                    "value": "WORST"
+                    "value": DieExprMultiRollType.WORST.name
                 },
             ],
         }

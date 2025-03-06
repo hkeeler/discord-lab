@@ -278,7 +278,7 @@ class DieExprMultiRollType(Enum):
     def resolve(self, roll_1: DieExprRoll, roll_2: DieExprRoll) -> DieExprMultiRollResult:
         result_roll: DieExprRoll
 
-        if self == DieExprMultiRollType.ADVANTAGE:
+        if self == DieExprMultiRollType.BEST:
             if roll_1.value > roll_2.value:
                 result_roll = roll_1
             else:
