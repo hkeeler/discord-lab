@@ -478,11 +478,11 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             die_roll_val = multi_roll_results.resolved_roll.value
             result_md_no_total = render_multi_roll_results(multi_roll_results)
         else:
-            die_roll_val = die_expr.roll()
+            die_roll_val = die_expr.roll().value
             result_md_no_total = render_expr_roll(die_roll_val, True)
 
         if must_beat:
-            if die_roll_val.value > int(must_beat):
+            if die_roll_val > int(must_beat):
                 res_embed_color = 5763719 # Green
                 res_message = success_text
                 res_image = success_image_url
@@ -500,7 +500,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             "description": res_message,
             "image": {"url": res_image} if res_image else None,
             "fields": [
-                { "name": "Result", "value": die_expr_roll.value, "inline": True},
+                { "name": "Result", "value": die_roll_val, "inline": True},
                 { "name": "Details", "value": result_md_no_total, "inline": True},
             ],
         }
