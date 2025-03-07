@@ -476,15 +476,15 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             multi_roll_type = DieExprMultiRollType[special_roll_types[0]]
             multi_roll_results = DieExprMultiRoll(die_expr, multi_roll_type).roll()
             die_roll_val = multi_roll_results.resolved_roll.value
-            result_md_no_total = render_multi_roll_results(multi_roll_results)
+            result_md = render_multi_roll_results(multi_roll_results)
         else:
             die_roll = die_expr.roll()
             die_roll_val = die_roll.value
-            result_md_no_total = render_expr_roll(die_roll, True)
+            result_md = render_expr_roll(die_roll, True)
 
     # FIXME: There are likely cases where this will render strangely
     except DieParseException as dpe:
-        result_md_no_total = str(dpe)
+        result_md = str(dpe)
 
     if must_beat:
         if die_roll_val > int(must_beat):
@@ -501,7 +501,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds.append(
         {
             "color": res_embed_color,
-            "description": result_md_no_total,
+            "description": f"# {result_md}",
         }
     )
 
