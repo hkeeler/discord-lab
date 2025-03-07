@@ -166,6 +166,18 @@ def render_expr_roll(rolls: DieExprRoll, include_total: bool) -> str:
     return md
 
 
+def render_multi_roll_results(multi_roll_results: DieExprMultiRollResult) -> str:
+    roll_1, roll_2 = multi_roll_results.rolls
+    resolved_roll = multi_roll_results.resolved_roll
+    
+    roll_1_md = render_expr_roll(roll_1, False) + (' :point_left: ' if resolved_roll == roll_1 else '')
+    roll_2_md = render_expr_roll(roll_2, False) + (' :point_left: ' if resolved_roll == roll_2 else '')
+
+    content = f"{roll_1_md}\n{roll_2_md}\n# {resolved_roll.value}"
+
+    return content
+
+
 def option_name_to_value(req_body: dict, option_name: str, required: bool = True) -> Any:
     try:
         for option in req_body['data']['options']:
@@ -218,13 +230,8 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
         if multi_roll_type_str:
             multi_roll_type = DieExprMultiRollType[multi_roll_type_str]
             multi_roll_results = DieExprMultiRoll(die_expr, multi_roll_type).roll()
-            roll_1, roll_2 = multi_roll_results.rolls
-            resolved_roll = multi_roll_results.resolved_roll
-            
-            roll_1_md = render_expr_roll(roll_1, False) + (' :point_left: ' if resolved_roll == roll_1 else '')
-            roll_2_md = render_expr_roll(roll_2, False) + (' :point_left: ' if resolved_roll == roll_2 else '')
 
-            content = f"{roll_1_md}\n{roll_2_md}\n# {resolved_roll.value}"
+            content = render_multi_roll_results(multi_roll_results)
         else:
             die_expr_roll = die_expr.roll()
             content = render_expr_roll(die_expr_roll, True)
@@ -280,12 +287,12 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
                             "placeholder": "Special rolls",
                             "options":[
                                 {
-                                    "label": "Advantage",
-                                    "value": "advantage",
+                                    "label": "Best of 2 / Advantage",
+                                    "value": "BEST",
                                 },
                                 {
-                                    "label": "Disadvantage",
-                                    "value": "disadvantage",
+                                    "label": "Worst of 2 / Disadvantage",
+                                    "value": "WORST",
                                 },
                             ],
                             "min_values": 0,
@@ -362,7 +369,50 @@ def slash_command(req_body: dict) -> tuple[int,dict]:
 
 
 def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
-    return 200, {'type':6} # DEFERRED_MESSAGE_UPDATE
+    message = req_body['message']
+    embeds = message['embeds']
+    components = message['components']
+    req_embed_fields = embeds[0]['fields']
+    interaction_id = req_body['message']['interaction']['id']
+    special_roll_types = req_body['data']['values']
+
+    dynamodb_client.update_item(
+        TableName="rollit-askroll-queue",
+        Key={
+            'interaction_id': {
+                'N': interaction_id,
+            }
+        },
+        AttributeUpdates={
+            'special_roll_types': {
+                'Value': {
+                    'SS': special_roll_types,
+                },
+                'Action': 'PUT'
+            }
+        },
+    )
+
+    prev_adj_val = embed_field_to_value(req_embed_fields, 'Special Roll', False)
+
+    if prev_adj_val:
+        for field in req_embed_fields:
+            if field['name'] == 'Special Roll':
+                field['value'] = '\n'.join(special_roll_types)
+    else:
+        req_embed_fields.append(
+            { "name": "Special Roll", "value": '\n'.join(special_roll_types), "inline": True},
+        )
+
+    res_data = {
+        'type': 7, # UPDATE_MESSAGE
+        'data': {
+            'embeds': embeds,
+            'components': components,
+        }
+    }
+
+    return 200, res_data
 
 
 def roll_click(req_body: dict) -> tuple[int,dict]:
@@ -381,6 +431,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
     adjust_expr_str: str = embed_field_to_value(req_embed_fields, 'Adjustment', False) or ''
 
+
     # Get roll req data from db
     roll_req = dynamodb_client.get_item(
         TableName='rollit-askroll-queue',
@@ -392,6 +443,9 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         ConsistentRead=True
     )['Item']
 
+    # Get special_roll_types from DB instead of embeds since easier to work with as a list
+    # instead of the `\n` separated string in the embed
+    special_roll_types = roll_req.get('special_roll_types', {}).get('SS', None)
     success_text = roll_req.get('success_text', {}).get('S', None)
     success_image_url = roll_req.get('success_image_url', {}).get('S', None)
     failure_text = roll_req.get('failure_text', {}).get('S', None)
@@ -414,9 +468,17 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     try:
         # FIXME: Improve merge of two expr strings
-        die_expr_with_adjust = f"{die_expr_str} {adjust_expr_str}"
-        die_expr_roll = DieExpr.parse(die_expr_with_adjust).roll()
-        result_md_no_total = render_expr_roll(die_expr_roll, False)
+        die_expr_str_with_adjust = f"{die_expr_str} {adjust_expr_str}"
+        die_expr = DieExpr.parse(die_expr_str_with_adjust)
+
+        # WARN: This will need special handling if special_roll_types supports types besides BEST and WORST
+        if special_roll_types:
+            multi_roll_type = DieExprMultiRollType[special_roll_types[0]]
+            multi_roll_results = DieExprMultiRoll(die_expr, multi_roll_type).roll()
+            result_md_no_total = render_multi_roll_results(multi_roll_results)
+        else:
+            die_expr_roll = die_expr.roll()
+            result_md_no_total = render_expr_roll(die_expr_roll, True)
 
         if must_beat:
             if die_expr_roll.value > int(must_beat):
