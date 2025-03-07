@@ -475,13 +475,14 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         if special_roll_types:
             multi_roll_type = DieExprMultiRollType[special_roll_types[0]]
             multi_roll_results = DieExprMultiRoll(die_expr, multi_roll_type).roll()
+            die_roll_val = multi_roll_results.resolved_roll.value
             result_md_no_total = render_multi_roll_results(multi_roll_results)
         else:
-            die_expr_roll = die_expr.roll()
-            result_md_no_total = render_expr_roll(die_expr_roll, True)
+            die_roll_val = die_expr.roll()
+            result_md_no_total = render_expr_roll(die_roll_val, True)
 
         if must_beat:
-            if die_expr_roll.value > int(must_beat):
+            if die_roll_val.value > int(must_beat):
                 res_embed_color = 5763719 # Green
                 res_message = success_text
                 res_image = success_image_url
