@@ -397,7 +397,7 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
 
     prev_special_roll_types = embed_field_to_value(req_embed_fields, special_roll_header, False)
 
-    special_roll_types_md = '\n'.join(DieExprMultiRollType[x] for x in special_roll_types)
+    special_roll_types_md = '\n'.join(DieExprMultiRollType[x].value for x in special_roll_types)
 
     if prev_special_roll_types:
         for field in req_embed_fields:
