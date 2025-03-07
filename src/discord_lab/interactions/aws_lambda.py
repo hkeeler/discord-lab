@@ -393,15 +393,19 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
         },
     )
 
-    prev_adj_val = embed_field_to_value(req_embed_fields, 'Special Roll', False)
+    special_roll_header = 'Special Roll'
 
-    if prev_adj_val:
+    prev_special_roll_types = embed_field_to_value(req_embed_fields, special_roll_header, False)
+
+    special_roll_types_md = '\n'.join(DieExprMultiRollType[x] for x in special_roll_types)
+
+    if prev_special_roll_types:
         for field in req_embed_fields:
-            if field['name'] == 'Special Roll':
-                field['value'] = '\n'.join(special_roll_types)
+            if field['name'] == special_roll_header:
+                field['value'] = special_roll_types_md
     else:
         req_embed_fields.append(
-            { "name": "Special Roll", "value": '\n'.join(special_roll_types), "inline": True},
+            { "name": special_roll_header, "value": special_roll_types_md, "inline": True},
         )
 
     res_data = {
