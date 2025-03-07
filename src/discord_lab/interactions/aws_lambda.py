@@ -481,26 +481,39 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             die_roll_val = die_expr.roll().value
             result_md_no_total = render_expr_roll(die_roll_val, True)
 
-        if must_beat:
-            if die_roll_val > int(must_beat):
-                res_embed_color = 5763719 # Green
-                res_message = success_text
-                res_image = success_image_url
-            else:
-                res_embed_color = 15548997 # Red
-                res_message = failure_text
-                res_image = failure_image_url
-
+    # FIXME: There are likely cases where this will render strangely
     except DieParseException as dpe:
         result_md_no_total = str(dpe)
 
+    if must_beat:
+        if die_roll_val > int(must_beat):
+            res_embed_color = 5763719 # Green
+            res_message = success_text
+            res_image = success_image_url
+        else:
+            res_embed_color = 15548997 # Red
+            res_message = failure_text
+            res_image = failure_image_url
+
+
+    # Add die roll results as a separate embed
     embeds.append(
         {
             "color": res_embed_color,
-            "description": f"{res_message}\n{result_md_no_total}",
-            "image": {"url": res_image} if res_image else None,
+            "description": result_md_no_total,
         }
     )
+
+
+    if res_message or res_image:
+        embeds.append(
+            {
+                "color": res_embed_color,
+                "description": res_message,
+                "image": {"url": res_image} if res_image else None,
+            }
+        )
+
 
     res_data = {
         'type': 7, # UPDATE_MESSAGE
