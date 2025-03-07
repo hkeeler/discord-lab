@@ -478,8 +478,9 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             die_roll_val = multi_roll_results.resolved_roll.value
             result_md_no_total = render_multi_roll_results(multi_roll_results)
         else:
-            die_roll_val = die_expr.roll().value
-            result_md_no_total = render_expr_roll(die_expr, True)
+            die_roll = die_expr.roll()
+            die_roll_val = die_roll.value
+            result_md_no_total = render_expr_roll(die_roll, True)
 
     # FIXME: There are likely cases where this will render strangely
     except DieParseException as dpe:
