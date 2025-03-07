@@ -497,12 +497,8 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds.append(
         {
             "color": res_embed_color,
-            "description": res_message,
+            "description": f"{res_message}\n{result_md_no_total}",
             "image": {"url": res_image} if res_image else None,
-            "fields": [
-                { "name": "Result", "value": die_roll_val, "inline": True},
-                { "name": "Details", "value": result_md_no_total, "inline": True},
-            ],
         }
     )
 
