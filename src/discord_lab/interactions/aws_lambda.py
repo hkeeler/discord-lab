@@ -410,8 +410,7 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
         AttributeUpdates={
             'special_roll_types': {
                 'Value': {
-                    # Q: Does this need special handling for empty list?
-                    'SS': special_roll_types_selected,
+                    'SS': special_roll_types_selected or None,
                 },
                 'Action': 'PUT'
             }
