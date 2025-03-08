@@ -387,12 +387,18 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
     components = message['components']
     req_embed_fields = embeds[0]['fields']
     interaction_id = req_body['message']['interaction']['id']
-    special_roll_types_selected = req_body['data']['values']
+
+    try:
+        special_roll_types_selected = req_body['data']['values']
+    except KeyError:
+        special_roll_types_selected = []
 
     special_roll_types_component_options = component_to_select_options(components, 'special_roll_types')
     for option in special_roll_types_component_options:
         if option['value'] in special_roll_types_selected:
             option['default'] = True
+        else:
+            option['default'] = False
 
     dynamodb_client.update_item(
         TableName="rollit-askroll-queue",
@@ -404,6 +410,7 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
         AttributeUpdates={
             'special_roll_types': {
                 'Value': {
+                    # Q: Does this need special handling for empty list?
                     'SS': special_roll_types_selected,
                 },
                 'Action': 'PUT'
