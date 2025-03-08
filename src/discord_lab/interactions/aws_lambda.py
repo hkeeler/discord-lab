@@ -403,9 +403,6 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
     if not special_roll_types_selected:
         attr_updates = {
             'special_roll_types': {
-                'Value': {
-                    'NULL': True,
-                },
                 'Action': 'DELETE'
             }
         }
@@ -418,7 +415,7 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
                 'Action': 'PUT'
             }
         }
-        
+
     dynamodb_client.update_item(
         TableName="rollit-askroll-queue",
         Key={
