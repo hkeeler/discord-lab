@@ -215,7 +215,7 @@ def component_to_select_options(action_rows: list[dict], custom_id: str, require
 def embed_field_to_value(embeds: list[dict], field_name, required: bool = True) -> Any:
     for embed in embeds:
         if embed['name'] == field_name:
-            return embed['value']            
+            return embed['value']
         
     if required:
         raise ValueError(f"Required embed field not present: {field_name}")
@@ -435,7 +435,10 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
     if prev_special_roll_types:
         for field in req_embed_fields:
             if field['name'] == special_roll_header:
-                field['value'] = special_roll_types_md
+                if special_roll_types_md:
+                    field['value'] = special_roll_types_md
+                else:
+                    field['value'] = "N/A"
     else:
         req_embed_fields.append(
             { "name": special_roll_header, "value": special_roll_types_md, "inline": True},
