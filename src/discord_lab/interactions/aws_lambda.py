@@ -178,7 +178,7 @@ def render_multi_roll_results(multi_roll_results: DieExprMultiRollResult) -> str
     return content
 
 
-def option_name_to_value(req_body: dict, option_name: str, required: bool = True) -> Any:
+def slash_cmd_option_name_to_value(req_body: dict, option_name: str, required: bool = True) -> Any:
     try:
         for option in req_body['data']['options']:
             if option['name'] == option_name:
@@ -191,11 +191,24 @@ def option_name_to_value(req_body: dict, option_name: str, required: bool = True
     else:
         return None
 
-def option_name_to_image_url(req_body: dict, option_name: str, required: bool = True) -> str|None:
-    attachment_id = option_name_to_value(req_body, option_name, required)
+
+def slash_cmd_option_name_to_image_url(req_body: dict, option_name: str, required: bool = True) -> str|None:
+    attachment_id = slash_cmd_option_name_to_value(req_body, option_name, required)
     if attachment_id:
         url = req_body['data']['resolved']['attachments'][attachment_id]['url']
         return url
+    else:
+        return None
+
+
+def component_to_select_options(action_rows: list[dict], custom_id: str, required: bool = True) -> list[str]|None:
+    for action_row in action_rows:
+        for component in action_row['components']:
+            if component['custom_id'] == custom_id:
+                return component['options']
+
+    if required:
+        raise ValueError(f"Required component not present: {custom_id}")
     else:
         return None
 
@@ -221,8 +234,8 @@ def get_interaction_message(interaction_token: str) -> dict:
 
 
 def roll_cmd(req_body: dict) -> tuple[int,dict]:
-    die_expr_str = option_name_to_value(req_body, 'dice')
-    multi_roll_type_str = option_name_to_value(req_body, 'multi-roll', False)
+    die_expr_str = slash_cmd_option_name_to_value(req_body, 'dice')
+    multi_roll_type_str = slash_cmd_option_name_to_value(req_body, 'multi-roll', False)
 
     die_expr = DieExpr.parse(die_expr_str)
 
@@ -251,15 +264,15 @@ def roll_cmd(req_body: dict) -> tuple[int,dict]:
 def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     interaction_id = req_body['id']
     from_user_id = req_body['member']['user']['id']
-    to_user_id = option_name_to_value(req_body, 'user')
-    die_expr_str = option_name_to_value(req_body, 'dice')
-    message_text = option_name_to_value(req_body, 'message-text', False)
-    message_image_url = option_name_to_image_url(req_body, 'message-image', False)
-    must_beat = option_name_to_value(req_body, 'must-beat', False)
-    success_text = option_name_to_value(req_body, 'success-text', False)
-    success_image_url = option_name_to_image_url(req_body, 'success-image', False)
-    failure_text = option_name_to_value(req_body, 'failure-text', False)
-    failure_image_url = option_name_to_image_url(req_body, 'failure-image', False)
+    to_user_id = slash_cmd_option_name_to_value(req_body, 'user')
+    die_expr_str = slash_cmd_option_name_to_value(req_body, 'dice')
+    message_text = slash_cmd_option_name_to_value(req_body, 'message-text', False)
+    message_image_url = slash_cmd_option_name_to_image_url(req_body, 'message-image', False)
+    must_beat = slash_cmd_option_name_to_value(req_body, 'must-beat', False)
+    success_text = slash_cmd_option_name_to_value(req_body, 'success-text', False)
+    success_image_url = slash_cmd_option_name_to_image_url(req_body, 'success-image', False)
+    failure_text = slash_cmd_option_name_to_value(req_body, 'failure-text', False)
+    failure_image_url = slash_cmd_option_name_to_image_url(req_body, 'failure-image', False)
 
     fields = [
         { "name": "Player", "value": f"<@{to_user_id}>", "inline": True},
@@ -374,7 +387,12 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
     components = message['components']
     req_embed_fields = embeds[0]['fields']
     interaction_id = req_body['message']['interaction']['id']
-    special_roll_types = req_body['data']['values']
+    special_roll_types_selected = req_body['data']['values']
+
+    special_roll_types_component_options = component_to_select_options(components, 'special_roll_types')
+    for option in special_roll_types_component_options:
+        if option['value'] in special_roll_types_selected:
+            option['default'] = True
 
     dynamodb_client.update_item(
         TableName="rollit-askroll-queue",
@@ -386,7 +404,7 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
         AttributeUpdates={
             'special_roll_types': {
                 'Value': {
-                    'SS': special_roll_types,
+                    'SS': special_roll_types_selected,
                 },
                 'Action': 'PUT'
             }
@@ -397,7 +415,7 @@ def special_roll_types_select(req_body: dict) -> tuple[int,dict]:
 
     prev_special_roll_types = embed_field_to_value(req_embed_fields, special_roll_header, False)
 
-    special_roll_types_md = '\n'.join(DieExprMultiRollType[x].value for x in special_roll_types)
+    special_roll_types_md = '\n'.join(DieExprMultiRollType[x].value for x in special_roll_types_selected)
 
     if prev_special_roll_types:
         for field in req_embed_fields:
