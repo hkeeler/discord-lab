@@ -178,7 +178,7 @@ def render_multi_roll_results(multi_roll_results: DieExprMultiRollResult) -> str
     if resolved_roll == roll_2:
         roll_2_md = f"# {roll_2_md} :point_left:"
 
-    content = f"{roll_1_md}\n{roll_2_md}\n# {resolved_roll.value}"
+    content = f"{roll_1_md}\n{roll_2_md}\n{resolved_roll.value}"
 
     return content
 
