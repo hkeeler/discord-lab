@@ -170,8 +170,13 @@ def render_multi_roll_results(multi_roll_results: DieExprMultiRollResult) -> str
     roll_1, roll_2 = multi_roll_results.rolls
     resolved_roll = multi_roll_results.resolved_roll
     
-    roll_1_md = render_expr_roll(roll_1, False) + (' :point_left: ' if resolved_roll == roll_1 else '')
-    roll_2_md = render_expr_roll(roll_2, False) + (' :point_left: ' if resolved_roll == roll_2 else '')
+    roll_1_md = render_expr_roll(roll_1, False)
+    if resolved_roll == roll_1:
+        roll_1_md = f"# {roll_1_md} :point_left:"
+
+    roll_2_md = render_expr_roll(roll_2, False)
+    if resolved_roll == roll_2:
+        roll_2_md = f"# {roll_2_md} :point_left:"
 
     content = f"{roll_1_md}\n{roll_2_md}\n# {resolved_roll.value}"
 
