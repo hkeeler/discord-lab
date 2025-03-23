@@ -546,7 +546,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     embeds.append(
         {
             "color": res_embed_color,
-            "description": f"# {result_md}",
+            "description": f"{result_md}",
         }
     )
 
