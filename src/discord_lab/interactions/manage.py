@@ -138,6 +138,12 @@ askroll_cmd = {
             'max_value': 100
         },
         {
+            'type': 5,
+            'name': 'must-beat-hidden',
+            'description': "Hide must-beat from players?",
+            'required': False,
+        },
+        {
             'type': 3,
             'name': 'message-text',
             'description': "Message text",

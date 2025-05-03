@@ -274,6 +274,7 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     message_text = slash_cmd_option_name_to_value(req_body, 'message-text', False)
     message_image_url = slash_cmd_option_name_to_image_url(req_body, 'message-image', False)
     must_beat = slash_cmd_option_name_to_value(req_body, 'must-beat', False)
+    must_beat_hidden = slash_cmd_option_name_to_value(req_body, 'must-beat-hidden', False)
     success_text = slash_cmd_option_name_to_value(req_body, 'success-text', False)
     success_image_url = slash_cmd_option_name_to_image_url(req_body, 'success-image', False)
     failure_text = slash_cmd_option_name_to_value(req_body, 'failure-text', False)
@@ -351,12 +352,10 @@ def askroll_cmd(req_body: dict) -> tuple[int,dict]:
     if message_text:
         dynamodb_item['message_text'] = {"S": message_text }
 
-    #if message_image_url:
-    #    res_data['data']['embeds'][0]['image'] = {'url': message_image_url}
-
-
     if must_beat:
-        fields.append({"name": "Must Beat", "value": must_beat, "inline": True})
+        must_bean_field_val = "???" if must_beat_hidden else must_beat
+        fields.append({"name": "Must Beat", "value": must_bean_field_val, "inline": True})
+
         dynamodb_item['must_beat'] = {"N": str(must_beat) }
 
         if success_text:
