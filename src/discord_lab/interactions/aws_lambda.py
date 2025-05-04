@@ -551,6 +551,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
             "description": f"{result_md}",
             "thumbnail": {
                 "url": avatar_url,
+                "width": 64,
             },               
         }
     )
