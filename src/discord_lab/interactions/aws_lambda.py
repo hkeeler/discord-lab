@@ -472,7 +472,6 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     requested_roller_user_id = embed_field_to_value(req_embed_fields, 'Player')
 
     # Optional options
-    must_beat = embed_field_to_value(req_embed_fields, 'Must Beat', False)
     adjust_expr_str: str = embed_field_to_value(req_embed_fields, 'Adjustment', False) or ''
 
 
@@ -489,6 +488,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
 
     # Get special_roll_types from DB instead of embeds since easier to work with as a list
     # instead of the `\n` separated string in the embed
+    must_beat = roll_req.get('must_beat', {}).get('N', None)
     special_roll_types = roll_req.get('special_roll_types', {}).get('SS', None)
     success_text = roll_req.get('success_text', {}).get('S', None)
     success_image_url = roll_req.get('success_image_url', {}).get('S', None)
