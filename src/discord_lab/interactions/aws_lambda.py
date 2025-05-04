@@ -465,6 +465,7 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
     interaction_id = req_body['message']['interaction']['id']
     button_clicker_user_id = req_body['member']['user']['id']
     button_clicker_user_avatar_id = req_body['member']['user']['avatar']
+    button_clicker_user_nickname = req_body['member']['nick']
 
     avatar_url = f"https://cdn.discordapp.com/avatars/{button_clicker_user_id}/{button_clicker_user_avatar_id}.png"
 
@@ -549,10 +550,10 @@ def roll_click(req_body: dict) -> tuple[int,dict]:
         {
             "color": res_embed_color,
             "description": f"{result_md}",
-            "thumbnail": {
-                "url": avatar_url,
-                "width": 64,
-            },               
+            "author": {
+                "name": button_clicker_user_nickname,
+                "icon_url": avatar_url,
+            },
         }
     )
 
